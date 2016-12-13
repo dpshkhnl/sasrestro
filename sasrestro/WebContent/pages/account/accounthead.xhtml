@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<h:head>
+	<link rel="stylesheet" type="text/css" href="css/decorator.css" />
+</h:head>
+<h:body>
+	<ui:composition template="/pages/protected/templates/master.xhtml">
+		<ui:define name="divMain">
+			<!-- <p:growl id="messages" showDetail="true" />  -->
+			<h:form id="accHeadForm">
+				<p:panel header="Current Account Heads">
+					<p:panelGrid columns="2" border="1" id="panelMain">
+						<p:tree value="#{treeBean.root}" var="node" dynamic="true"
+							cache="false" selectionMode="single"
+							emptyMessage="#{bundle.noRecords}"
+							selection="#{treeBean.selectedNode}" id="tree"
+							style="height: 500px!important">
+
+							<p:ajax event="expand" update=":messageGrowl"
+								listener="#{treeBean.onNodeExpand}" />
+							<p:ajax event="collapse" update=":messageGrowl"
+								listener="#{treeBean.onNodeCollapse}" />
+							<p:ajax event="select"
+								update=":messageGrowl :accHeadForm:accDetailsPanel"
+								listener="#{treeBean.onNodeSelect}" />
+							<p:ajax event="unselect" update=":messageGrowl "
+								listener="#{treeBean.onNodeUnselect}" />
+
+
+							<p:treeNode id="treeNode" expandedIcon="ui-icon-folder-open"
+								collapsedIcon="ui-icon-folder-collapsed">
+								<h:outputText value="#{node.accName}" id="lblNode" />
+							</p:treeNode>
+						</p:tree>
+
+						<p:panel header="Account Details" id="accDetailsPanel"
+							style="height: 500px!important">
+							<p:panelGrid columns="2" border="1" id="accDetailsPG">
+								<p:outputLabel value="Acc Code " />
+								<p:inputText value="#{treeBean.accHeadMB.accHead.accCode}"
+									label="#{bundle.accCode}" id="accCode" required="true"
+									readonly="true">
+									<f:validateLength minimum="2" />
+								</p:inputText>
+								<p:outputLabel value="Parent " />
+								<p:inputText value="#{treeBean.accHeadMB.accHead.parentName}"
+									label="#{bundle.parent}" id="parent" required="true"
+									readonly="true">
+									<f:validateLength minimum="1" />
+								</p:inputText>
+								<p:outputLabel value="Alias " />
+								<p:inputText value="#{treeBean.accHeadMB.accHead.alias}"
+									label="#{bundle.alias}" id="alias" required="true">
+									<f:validateLength minimum="2" />
+								</p:inputText>
+								<p:outputLabel value="Acc Name " />
+								<p:inputText value="#{treeBean.accHeadMB.accHead.accName}"
+									label="#{bundle.accName}" id="accName" required="true">
+									<f:validateLength minimum="4" />
+								</p:inputText>
+
+								<p:outputLabel value="Acc Type " />
+								<p:selectOneMenu id="cmbAccType"
+									value="#{treeBean.accHeadMB.accHead.accType}"
+									label="Account Type" required="true" effect="fold">
+									<f:selectItem itemLabel="Select One" itemValue="" />
+									<f:selectItems value="#{codeValueMB.codeValuesOfTypeAccount}"
+										var="codeValue" itemValue="#{codeValue.cvId}"
+										itemLabel="#{codeValue.cvLbl}" />
+									<p:ajax listener="#{treeBean.onAccTypeSelect()}"
+										update=":accHeadForm:cmbAccType	:accHeadForm:drcrOptions" />
+								</p:selectOneMenu>
+								<h:outputText value="Dr.or Cr. " />
+								<p:selectOneRadio id="drcrOptions"
+									value="#{treeBean.accHeadMB.accHead.drcr}" disabled="true">
+									<f:selectItem itemLabel="Dr." itemValue="dr" />
+									<f:selectItem itemLabel="Cr." itemValue="cr" />
+									<p:ajax listener="#{treeBean.onAccTypeSelect()}"
+										update=":accHeadForm:cmbAccType	:accHeadForm:drcrOptions" />
+								</p:selectOneRadio>
+								<h:outputText value="Is Summation " />
+								<p:selectOneRadio id="summationOptions"
+									value="#{treeBean.accHeadMB.accHead.jvStatus}" disabled="true">
+									<f:selectItem itemLabel="Yes" itemValue="1" />
+									<f:selectItem itemLabel="No" itemValue="0" />
+								</p:selectOneRadio>
+
+								<p:outputLabel value="Balance" />
+								<p:spinner value="#{treeBean.accHeadMB.accHead.minBal}"
+									label="#{bundle.balance}" id="balance" required="true">
+									<f:validateLength minimum="1" />
+								</p:spinner>
+								<p:outputLabel value="Remarks" />
+								<p:inputText value="#{treeBean.accHeadMB.accHead.remarks}"
+									label="#{bundle.remarks}" id="remarks" required="false">
+								</p:inputText>
+							</p:panelGrid>
+							<br />
+							<p:commandButton value="Save" icon="ui-icon-plus" onclick=""
+								disabled="#{userPrevilegeMB.accountHead lt 2}"
+								actionListener="#{treeBean.saveNewAccHead()}"
+								update=":accHeadForm:accDetailsPanel :accHeadForm:tree"
+								ajax="false">
+							</p:commandButton>
+
+							<p:commandButton value="Edit" icon="ui-icon-pencil"
+								disabled="#{userPrevilegeMB.accountHead lt 2}"
+								onclick="edit.show();">
+								<f:setPropertyActionListener target="#{accHeadMB.accHead}"
+									value="#{treeBean.accHeadMB.accHead}" />
+							</p:commandButton>
+							<p:commandButton value="#{bundle.delete}" icon="ui-icon-bullet"
+								disabled="#{userPrevilegeMB.accountHead lt 3}"
+								onclick="cd.show();" />
+
+							<p:commandButton value="New" icon="ui-icon-bullet"
+								actionListener="#{treeBean.accHeadMB.addNewHead()}"
+								disabled="#{userPrevilegeMB.accountHead lt 2}"
+								update=":messageGrowl :accHeadForm:tree :accHeadForm:accDetailsPanel ">
+							</p:commandButton>
+
+							<p:confirmDialog
+								message="Are you sure to delete the Account Head ?"
+								global="true" showEffect="fade" hideEffect="explode"
+								header="Delete" widgetVar="cd" modal="true">
+								<p:commandButton value="Yes" styleClass="ui-confirmdialog-yes"
+									icon="ui-icon-check"
+									actionListener="#{treeBean.removeAccHead()}"
+									update=":messageGrowl :accHeadForm:tree :accHeadForm:accDetailsPanel "
+									oncomplete="cd.hide()" process="@this">
+									<p:resetInput target=":accHeadForm" />
+								</p:commandButton>
+								<p:commandButton value="No" styleClass="ui-confirmdialog-no"
+									icon="ui-icon-close" onclick="cd.hide()" />
+							</p:confirmDialog>
+
+							<p:confirmDialog
+								message="Are you sure to Edit the Account Head ?" global="true"
+								showEffect="fade" hideEffect="explode" header="Edit"
+								widgetVar="edit" modal="true">
+								<p:commandButton value="Yes" styleClass="ui-confirmdialog-yes"
+									icon="ui-icon-check"
+									actionListener="#{treeBean.updateAccHead()}"
+									update=":messageGrowl :accHeadForm:tree :accHeadForm:accDetailsPanel"
+									oncomplete="edit.hide()" process="@this">
+									<p:resetInput target=":accHeadForm" />
+								</p:commandButton>
+								<p:commandButton value="No" styleClass="ui-confirmdialog-no"
+									icon="ui-icon-close" onclick="cd.hide()" />
+							</p:confirmDialog>
+						</p:panel>
+					</p:panelGrid>
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

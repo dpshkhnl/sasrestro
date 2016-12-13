@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:body>
+	<p:dialog widgetVar="activeUserWidget" id="activeUserFormId"
+		width="600" modal="true" closable="true" draggable="false"
+		resizable="false" header="Active Users">
+		<h:form id="activeUserForm" prependId="false">
+			<p:growl id="mess" showDetail="false"></p:growl>
+			<p:panel id="panelActive">
+				<p:panelGrid id="gridActive" columns="1">
+					<p:dataTable id="usersTable" value="#{dayInOutMB.lstActiveUser}"
+						update="mess" rowIndexVar="rowsn" var="user"
+						style="width:500px;margin-top:30px" paginator="true" rows="5"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="5,10,15" resizableColumns="true">
+
+
+
+						<p:column style="width:20px">
+							<f:facet name="header">
+								<h:outputText value="Sn" />
+							</f:facet>
+							<h:outputText value="#{rowsn+1}" />
+						</p:column>
+						<p:column style="width:100px">
+
+							<f:facet name="header">
+								<h:outputText value="Full Name" />
+							</f:facet>
+
+							<h:outputText value="#{user.name}" />
+						</p:column>
+
+						<p:column style="width:100px">
+							<f:facet name="header">
+								<h:outputText value="User Name" />
+							</f:facet>
+							<h:outputText value="#{user.email}" />
+						</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Role" />
+							</f:facet>
+							<h:outputText value="#{user.role.roleName}" />
+						</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Action" />
+							</f:facet>
+							<p:commandButton icon="ui-icon-cancel" title="Force Log Out"
+								onclick="confirmlogOutAlert.show()"
+								process = "@this">
+								 <f:setPropertyActionListener target="#{loginMB.currentUser}"
+									value="#{user}"/> 
+							</p:commandButton>
+
+						</p:column>
+
+					</p:dataTable>
+				</p:panelGrid>
+			</p:panel>
+		
+			<p:confirmDialog 
+				message="Do you want to Log Out #{loginMB.currentUser.email} ?" severity="alert"
+				widgetVar="confirmlogOutAlert" visible="false" appendToBody="true"
+				modal="true">
+				<p:growl id="messages" sticky="false" />
+				<p:commandButton value="Log Out" update=":activeUserForm:mess usersTable"
+				action="#{loginMB.forceLogOut}" process = "@this"
+					oncomplete="confirmlogOutAlert.hide()">
+				</p:commandButton>
+				<p:commandButton value="Cancel" onclick="confirmlogOutAlert.hide()"
+					type="button" />
+			</p:confirmDialog>
+		</h:form>
+	</p:dialog>
+</h:body>
+</html>

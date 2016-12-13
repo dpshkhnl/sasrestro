@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<h:head>
+	<link rel="stylesheet" type="text/css" href="css/decorator.css" />
+</h:head>
+<h:body>
+	<ui:composition template="/pages/protected/templates/master.xhtml">
+		<ui:define name="divMain">
+			<h:form id="openBForm">
+				<p:panel header="Opening Balance Entry">
+					<p:panelGrid columns="3">
+
+						<h:outputLabel value="Root Heads :" />
+						<p:selectOneMenu id="cmbRootHead" value="#{openingBalMB.head}"
+							converter="#{accHeadConverter}">
+							<f:selectItem itemLabel="Select" />
+							<f:selectItems value="#{openingBalMB.rootHeads}" var="head"
+								itemLabel="#{head.accName}" itemValue="#{head}" />
+							<p:ajax listener="#{openingBalMB.getChildHeads()}"
+								update="dummyTable" />
+						</p:selectOneMenu>
+
+						<p:commandButton value="Save" action="#{openingBalMB.save()}"
+						disabled="#{userPrevilegeMB.openingBalanceEntry lt 2}"
+							update=":messageGrowl openBForm" />
+
+					</p:panelGrid>
+					<p:panelGrid columns="1">
+						<p:dataTable id="dummyTable" editable="true" editMode="cell"
+							rowIndexVar="rowsn" resizableColumns="true"
+							value="#{openingBalMB.openBalDummyList}" var="child"
+							rowEditListener="#{openingBalMB.openBalDummyList}">
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="#{bundle.sn}" />
+								</f:facet>
+								<h:outputText value="#{rowsn+1}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Account Head" />
+								</f:facet>
+								<h:outputText value="#{child.accheadObj.accName}" />
+							</p:column>
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Opening Balance" />
+								</f:facet>
+								<p:cellEditor id="chk" rendered="true">
+
+									<f:facet name="output">
+										<h:outputText id="old" value="#{child.openingBal}" />
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText id="new" value="#{child.openingBal}"
+											style="width :220px" />
+
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+						</p:dataTable>
+					</p:panelGrid>
+				</p:panel>
+			</h:form>
+		</ui:define>
+
+	</ui:composition>
+</h:body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+</h:head>
+<h:body>
+	<ui:composition>
+		<div id="topMessage">
+			<h:form>
+				<div id="logo">
+					<p:graphicImage url="/resources/images/icon.png"
+						style="float:left;height:80px;margin-left:15px;" />
+					<p:graphicImage url="/resources/images/nepaliTitle.png"
+						style="float:left;height:50px;width:320px;margin-top:10px;margin-left:15px;" />
+					<div
+						style="margin-top: 0px; margin-right: 20px; float: right; font-size: 10px;">
+						<h:panelGrid columns="2"
+							style="font-size:10px;font-family:Helvetica;margin-left:180px;margin-bottom:3px;">
+							<h:outputText value="Day In Time :"
+								style="color:#A32900;float:right;"></h:outputText>
+							<h:panelGrid columns="3">
+								<h:outputText value="#{userMB.user.dayInStatus.dayInDateEn}"
+									style="float:left;font-size:12px;color:#A32900">
+									<f:convertDateTime pattern="yyyy-MM-dd G "></f:convertDateTime>
+								</h:outputText>
+								<h:outputText value="/" style="font-weight:bold;" />
+								<h:outputText value="#{userMB.user.dayInStatus.dayInDateNp}"
+									style="float:right;font-size:12px;color:#A32900">
+									<f:convertDateTime pattern="yyyy-MM-dd"></f:convertDateTime>
+								</h:outputText>
+							</h:panelGrid>
+							<h:outputText value="System Time :"></h:outputText>
+							<p:clock pattern="yyyy-MM-dd  G  HH:mm:ss" />
+
+						</h:panelGrid>
+						<!-- <h:panelGrid columns="4" style="float:right;">
+						
+							<p:commandButton value="Change Password"
+								update=":userchangePasswordForm"
+								onclick="userchangePasswordFormWidget.show();">
+								<f:setPropertyActionListener target="#{userMB.user}"
+									value="#{userMB.user}" />
+							</p:commandButton>
+							
+							
+						</h:panelGrid> -->
+					</div>
+					<br />
+				</div>
+				<div id="menu">
+					<p:menubar autoDisplay="false">
+						<p:menuitem value="Home" icon="ui-icon-home"
+							style="margin-left:20px;" url="/pages/restaurant/main.xhtml"
+							immediate="true" ajax="false"></p:menuitem>
+
+						<p:submenu label="Admin" icon="ui-icon-document"
+							style="margin-left:20px;">
+							<p:submenu label="Management" icon="ui-icon-contact">
+								<p:menuitem value="User Management" icon="ui-icon-arrowstop-1-e"
+									url="/pages/protected/admin/usermanagement.xhtml" />
+								<!-- <p:menuitem value="Role Management" icon="ui-icon-arrowstop-1-e"
+									url="/pages/protected/admin/rolemanagement.xhtml" 
+									immediate="true" ajax="false" />-->
+							</p:submenu>
+							<p:menuitem value="Active Users"
+								onclick="activeUserWidget.show();" />
+							<p:menuitem value="Day Out" onclick="confirmation.show();" />
+							<p:menuitem value="Back Up Database"
+								action="#{dayInOutMB.backUp()}" />
+							<!-- we may omit the action="#{userMB.logOut()}" bean method call in following code -->
+							<p:menuitem value="Log Out" action="#{userMB.logOut()}" />
+						</p:submenu>
+
+						<p:menuitem value="Menu" style="margin-left:20px;"
+							url="/pages/restaurant/menu.xhtml" immediate="true" ajax="false"></p:menuitem>
+						<p:menuitem value="Table" style="margin-left:20px;"
+							url="/pages/restaurant/tables.xhtml" immediate="true"
+							ajax="false"></p:menuitem>
+						<p:menuitem value="Print Bill" style="margin-left:20px;"
+							onclick="printDia.show();" />
+
+						<p:submenu label="Account" style="margin-left:20px;">
+							<p:menuitem value="Account Head"
+								url="/pages/account/accounthead.xhtml" immediate="true"
+								ajax="false" />
+							<p:menuitem value="Opening Balance Entry"
+								url="/pages/account/openingBalanceEntry.xhtml" />
+							<p:menuitem value="Journal Voucher"
+								url="/pages/account/journalVoucherDetails.xhtml"
+								immediate="true" />
+							<p:menuitem value="Ledger" url="/pages/account/ledger.xhtml" />
+							<p:menuitem value="TrialBalance"
+								url="/pages/account/trialBalance.xhtml" />
+							<p:menuitem value="BalanceSheet"
+								url="/pages/account/balanceSheet.xhtml" />
+							<p:menuitem value="ProfitLoss"
+								url="/pages/account/profitLoss.xhtml" />
+							<p:menuitem value="Account Head Map"
+								url="/pages/account/accHeadMap.xhtml" />
+						</p:submenu>
+
+
+						<!-- <p:submenu label="Employee" >
+						<p:menuitem value="Employee Management"
+							url="/pages/restaurant/employeemgmt.xhtml" immediate="true" ajax="false" />
+						<p:menuitem value="Employee Attendance" 
+							url="/pages/restaurant/employeeAttendance.xhtml" immediate="true" ajax="false"></p:menuitem> 						
+						</p:submenu> -->
+
+						<p:menuitem value="Welcome: #{userMB.user.name} |"
+							style="position: absolute; right: 200px;" />
+						<p:menuitem value="Log Out" action="#{userMB.logOut()}"
+							ajax="false" style="position: absolute; right: 120px;" />
+					</p:menubar>
+				</div>
+				<p:confirmDialog message="Are you sure you want to perform DayOut?"
+					header="Day Out" severity="alert" widgetVar="confirmation">
+					<p:commandButton style="margin-left:100px" value="Yes"
+						action="#{dayInOutMB.performDayOut()}" process="@this"
+						update=":activeUserForm " oncomplete="confirmation.hide()">
+					</p:commandButton>
+					<p:commandButton value="No" process="@this"
+						onclick="confirmation.hide()" type="button" />
+				</p:confirmDialog>
+			</h:form>
+			<ui:include src="/pages/protected/templates/sessiontimeout.xhtml" />
+			<ui:include src="/pages/restaurant/printBillDialog.xhtml"></ui:include>
+
+			<ui:include
+				src="/pages/protected/admin/dialogs/activeuserdialog.xhtml" />
+			<ui:include
+				src="/pages/protected/admin/dialogs/userChangePassword.xhtml" />
+
+			<br />
+		</div>
+	</ui:composition>
+</h:body>
+</html>

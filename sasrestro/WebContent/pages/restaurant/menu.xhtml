@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<title>SAS Restro:Menu</title>
+	<link rel="stylesheet" type="text/css" href="css/decorator.css" />
+</h:head>
+<h:body>
+	<ui:composition template="/pages/protected/templates/master.xhtml">
+		<ui:define name="divMain">
+			<h:form id="frmMenu" target="_blank">
+				<p:blockUI block="frmMenu" trigger="search">
+					<p:graphicImage value="/resources/images/ajax-load.gif" />
+				</p:blockUI>
+				<p:growl id="msgs" showDetail="false" />
+				<p:panel>
+					<p:panel>
+						<p:panelGrid columns="2">
+							<p:outputLabel id="searchFieldClient" value="Item Name:" />
+							<p:autoComplete id="autoCompleteDatad"
+								value="#{menuItemMB.itemName}" minQueryLength="2" maxResults="7"
+								size="33">
+							</p:autoComplete>
+						</p:panelGrid>
+						<p:panelGrid columns="3">
+							<p:commandButton icon=" ui-icon-search " id="search"
+								process="@this" update="tblPlan" value="Search"
+								style="width:100px;margin-left:10px">
+							</p:commandButton>
+							<p:commandButton icon=" ui-icon-refresh " value="Cancel"
+								style="width:100px;margin-left:10px">
+							</p:commandButton>
+							<p:commandButton icon=" ui-icon-refresh " value="Add"
+								action="#{menuItemMB.loadForNew()}" update=":addMenu"
+								style="width:100px;margin-left:10px">
+							</p:commandButton>
+						</p:panelGrid>
+					</p:panel>
+					<p:dataTable id="tblPlan" rowIndexVar="rowIndex"
+						value="#{menuItemMB.lstMenuItem}" var="item" paginator="true"
+						rows="50"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="50,100,150" scrollable="true">
+						<p:column style="width:20px">
+							<f:facet name="header">
+								<h:outputText value="Sno" />
+							</f:facet>
+							<h:outputText value="#{rowIndex+1}" />
+						</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Name" />
+							</f:facet>
+							<h:outputText value="#{item.name}" />
+						</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Category" />
+							</f:facet>
+							<h:outputText value="#{item.category}" />
+						</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Price" />
+							</f:facet>
+							<h:outputText value="#{item.price}">
+								<f:convertNumber currencySymbol="Rs." type="currency" />
+							</h:outputText>
+						</p:column>
+						<p:column>
+							<f:facet name="header">
+								<h:outputText value="Action" />
+							</f:facet>
+							<p:commandButton icon="ui-icon-pencil" process="@this"
+								style="width:25px" action="#{menuItemMB.loadForEdit()}"
+								update=":addMenu ">
+								<f:setPropertyActionListener
+									target="#{menuItemMB.menuItemModel.itemId}"
+									value="#{item.itemId}"></f:setPropertyActionListener>
+							</p:commandButton>
+							<p:commandButton icon="ui-icon-close" style="width:25px"
+								process="@this" update=":frmMenu:msgs :addMenu" title="Delete"
+								onclick="cd.show()">
+								<f:setPropertyActionListener value="#{item.itemId}"
+									target="#{menuItemMB.menuItemModel.itemId}"></f:setPropertyActionListener>
+							</p:commandButton>
+						</p:column>
+					</p:dataTable>
+					<p:confirmDialog message="Are you sure you want to delete ?"
+						global="true" showEffect="fade" hideEffect="explode"
+						header="Delete" severity="alert" widgetVar="cd" modal="true">
+						<p:commandButton value="Yes" styleClass="ui-confirmdialog-yes"
+							icon="ui-icon-check" actionListener="#{menuItemMB.delete()}"
+							update="tblPlan" process="@this" oncomplete="cd.hide()">
+						</p:commandButton>
+						<p:commandButton value="No" type="button"
+							styleClass="ui-confirmdialog-no" icon="ui-icon-close"
+							onclick="cd.hide()" />
+					</p:confirmDialog>
+				</p:panel>
+			</h:form>
+			<ui:include src="/pages/restaurant/dialog/menuItemDialog.xhtml"></ui:include>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

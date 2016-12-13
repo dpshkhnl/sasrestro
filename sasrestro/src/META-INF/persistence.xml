@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+	version="1.0">
+	<persistence-unit name="sasrestroPU" transaction-type="JTA">
+		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+		<jta-data-source>sasrestroDS</jta-data-source>
+		<class>sasrestro.model.account.AccHeadMap</class>
+		<class>sasrestro.model.account.AccHeadMcg</class>
+		<class>sasrestro.model.account.AccountReportModel</class>
+		<class>sasrestro.model.account.BudgetModel</class>
+		<class>sasrestro.model.account.CodeValue</class>
+		<class>sasrestro.model.account.FormCodeModel</class>
+		<class>sasrestro.model.account.JournalPk</class>
+		<class>sasrestro.model.account.JournalVoucherDetailModel</class>
+		<class>sasrestro.model.account.JournalVoucherModel</class>
+		<class>sasrestro.model.account.LedgerMcg</class>
+		<class>sasrestro.model.restaurant.BillDetailModel</class>
+		<class>sasrestro.model.restaurant.BillModel</class>
+		<class>sasrestro.model.restaurant.EmployeeAttModel</class>
+		<class>sasrestro.model.restaurant.EmployeeModel</class>
+		<class>sasrestro.model.restaurant.MasterSettingModel</class>
+		<class>sasrestro.model.restaurant.MenuItemModel</class>
+		<class>sasrestro.model.restaurant.OrderModel</class>
+		<class>sasrestro.model.restaurant.TableModel</class>
+		<class>sasrestro.model.user.AccessControlList</class>
+		<class>sasrestro.model.user.User</class>
+		<class>sasrestro.model.user.UserLoginInfo</class>
+		<class>sasrestro.model.user.UserRole</class>
+		<class>sasrestro.model.util.DayInOutStatusModel</class>
+		<class>sasrestro.model.util.FiscalYrModel</class>
+		<!-- <provider>org.hibernate.ejb.HibernatePersistence</provider> -->
+
+		<properties>
+
+			<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/sasrestro" />
+			<property name="javax.persistence.jdbc.user" value="root" />
+			<property name="javax.persistence.jdbc.password" value="p@ssw0rd" />
+
+			<!--Hibernate properties -->
+			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.format_sql" value="false" />
+			<property name="hibernate.hbm2ddl.auto" value="create" />
+			<property name="eclipselink.ddl-generation" value="create-tables" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+
+		</properties>
+	</persistence-unit>
+</persistence>

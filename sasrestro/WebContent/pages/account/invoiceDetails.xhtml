@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<link rel="stylesheet" type="text/css" href="css/decorator.css" />
+</h:head>
+<h:body>
+	<ui:composition template="/pages/protected/templates/master.xhtml">
+		<ui:define name="divMain">
+			<h:form style="margin-bottom:10px;" id="frmInvoiceDetails">
+
+				<p:panel header="Inovice Details" id="invoiceDetails">
+					<p:panel>
+						<h:panelGrid columns="2" style="margin-bottom:10px"
+							cellpadding="5">
+
+							<p:row>
+								<p:column style="text-align:left">
+									<h:outputText value="Date From (A.D.): *" />
+								</p:column>
+								<p:column>
+									<p:calendar effect="explode" id="calinvoiceDateFrom" size="20"
+										value="#{invoiceDetailsMB.fromDate}" pattern="yyyy-MM-dd"
+										display="inline" process="@this" >
+										<p:ajax event="dateSelect" />
+									</p:calendar>
+								</p:column>
+								<p:column style="text-align:left;">
+									<h:outputText style="margin-left:20px;"
+										value="Date To (A.D.): *" />
+								</p:column>
+								<p:column>
+									<p:calendar effect="explode" id="calInvoiceDateTo" size="20"
+										value="#{invoiceDetailsMB.toDate}" pattern="yyyy-MM-dd"
+										display="inline" process="@this" >
+										<p:ajax event="dateSelect" />
+									</p:calendar>
+								</p:column>
+							
+									<h:outputText style="margin-left:20px;"
+										value="Invoice Status *" />
+								
+								
+									<p:selectOneMenu id="cmbStatus"
+										style="width:200px;margin-left:20px;"
+										value="#{invoiceDetailsMB.codeValue.cvId}" required="true"
+										requiredMessage="Please select the Invoice status">
+										<f:selectItem itemLabel=" Select " itemValue="" />
+										<f:selectItems
+											value="#{codeValueMB.codeValueForInvoiceStatus}" var="status"
+											itemLabel="#{status.cvLbl}" itemValue="#{status.cvId}"></f:selectItems>
+
+
+									</p:selectOneMenu>
+								
+							</p:row>
+						</h:panelGrid>
+						<p:panelGrid style="margin:0 auto;" styleClass="borderlesspanel"
+							columns="5">
+							<p:commandButton id="cmdView" value="View" style="width:80px;"
+								actionListener="#{invoiceDetailsMB.getAllInvoice()}"
+								update="tblInvoiceDetails :frmInvoiceDetails:messages" />
+							<p:commandButton value="Cancel" style="width:80px;"
+							actionListener = "#{invoiceDetailsMB.reset}"
+							update=":frmInvoiceDetails:tblInvoiceDetails :frmInvoiceDetails:calinvoiceDateFrom :frmInvoiceDetails:calInvoiceDateTo " 
+								process="@this">
+
+							</p:commandButton>
+
+						</p:panelGrid>
+					</p:panel>
+				</p:panel>
+
+				<p:dataTable id="tblInvoiceDetails"
+					value="#{invoiceDetailsMB.allInvoice}" var="invoice"
+					rowIndexVar="rowsn" paginator="true" rows="10"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="10,20,30">
+					<p:column style="width:20px;">
+						<f:facet name="header">
+							<h:outputText value="#{bundle.sn}" />
+						</f:facet>
+						<h:outputText value="#{rowsn+1}" />
+					</p:column>
+					<p:column
+						style="white-space:pre-line;word-break:break-all;width:100px">
+						<f:facet name="header">
+							<h:outputText value="Invoice No." />
+						</f:facet>
+						<h:outputText value="#{invoice.invNo}" />
+					</p:column>
+					<p:column
+						style="white-space:pre-line;word-break:break-all;width:100px">
+						<f:facet name="header">
+							<h:outputText value="Invoice Date" />
+						</f:facet>
+						<h:outputText value="#{invoice.invDtEn}">
+							<f:convertDateTime pattern="yyyy-MM-dd" />
+						</h:outputText>
+					</p:column>
+					<p:column style="width:60px;">
+						<f:facet name="header">
+							<h:outputText value="Supplier" />
+
+						</f:facet>
+						<h:outputText value="#{invoice.supId.suppName}">
+
+
+						</h:outputText>
+					</p:column>
+					<p:column style="width:60px">
+						<f:facet name="header">
+							<h:outputText value="Amount" />
+						</f:facet>
+						<h:outputText value="Rs.#{invoice.invAmt}">
+						</h:outputText>
+					</p:column>
+					<p:column style="width:30px;">
+						<f:facet name="header">
+							<h:outputText value="Status" />
+						</f:facet>
+						<h:outputText value="#{invoice.status.cvLbl}">
+						</h:outputText>
+					</p:column>
+					<p:column style="width:30px">
+						<f:facet name="header">
+							<h:outputText value="Action" />
+						</f:facet>
+						<p:commandButton icon="ui-icon-check" title="Payment"
+						disabled="#{invoice.status.cvLbl=='Paid'?true:userPrevilegeMB.invoiceDetails lt 2}"
+							style="width:35px;height:30px" process="@this" 
+							update=":invoiceDialog :messageGrowl :frmInvoiceDetails:tblInvoiceDetails" oncomplete="invoiceDialogWidget.show()"
+							action = "#{invoiceDetailsMB.resetDialog()}">
+							<f:setPropertyActionListener
+								target="#{invoiceDetailsMB.inventoryInvoiceModel}"
+								value="#{invoice}" />
+
+						</p:commandButton>
+						<p:commandButton icon="ui-icon-circle-zoomin"
+							update=":messageGrowl :invoiceDetails" title="Details" oncomplete = "invoiceDetailDialogWidget.show()"
+							style="width:35px; height:30px" 
+							action ="#{invoiceDetailsMB.showDetails()}" 
+							process="@this" >
+							<f:setPropertyActionListener
+								target="#{invoiceDetailsMB.invInvoiceModel}"
+								value="#{invoice}" />
+						</p:commandButton>
+					</p:column>
+
+				</p:dataTable>
+				<p:growl id="messages" showDetail="true" />
+
+			</h:form>
+			<ui:include src = "/pages/account/invoicePaymentDialog.xhtml"/>
+			<ui:include src = "/pages/account/invoiceDetailDialog.xhtml"/>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<style type="text/css">
+.issuePanela {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #333;
+	background-color: #fff;
+}
+
+div.ui-datepicker {
+	font-size: 12px !important;
+}
+</style>
+</h:head>
+<h:body>
+	<div class="issuePanela">
+		<p:dialog widgetVar="dayInDialog" id="dayInDialogID" modal="true"
+			height="200" width="600" closable="false" draggable="false"
+			dynamic="true" resizable="false" header="Start Day In">
+
+			<h:form id="frmDayIn">
+				
+
+				<p:panel id="panelMain">
+					<p:panelGrid id="grid" columns="3">
+						<h:outputText value="Day In Date" />
+						<p:calendar value="#{dayInOutMB.dayInOutModel.dayInDateEn}"
+							inline="true" id="calDayInDate" pattern="yyyy-MM-dd"
+							required="true" requiredmsssa="Day In Date Required">
+							<p:ajax event="dateSelect"
+								listener="#{dayInOutMB.updateDateInToBS()}" update="dayInNpDate" />
+						</p:calendar>
+						<p:inputMask id="dayInNpDate"
+							value="#{dayInOutMB.dayInOutModel.dayInDateNp}" required="true"
+							mask="9999-99-99" requiredmsssa="Enter DayIn Date in Nepali">
+							<p:focus />
+							<p:ajax event="blur" listener="#{dayInOutMB.updateDateInToAD()}"
+								update="calDayInDate" />
+						</p:inputMask>
+						<h:outputText value="Today Date" />
+						<p:calendar value="#{dayInOutMB.today}" effect="explode"
+							id="calTodayDate" pattern="yyyy-MM-dd" disabled="true"
+							required="true" requiredmsssa="Exam Date En Required">
+							<p:ajax event="dateSelect"
+								listener="#{dayInOutMB.updateDateTodayToAD()}"
+								update="todayNpDate" />
+						</p:calendar>
+						<p:inputMask id="todayNpDate" disabled="true"
+							value="#{dayInOutMB.todayNp}" required="true" mask="9999-99-99"
+							requiredmsssa="Enter Exam Date Nepali">
+							<p:ajax event="blur"
+								listener="#{dayInOutMB.updateDateTodayToAD()}"
+								update="calTodayDate" />
+						</p:inputMask>
+						<h:outputText value="Last Day Out" />
+						<p:calendar
+							value="#{dayInOutMB.previousDayInOutModel.transDateEn}"
+							effect="explode" id="calDayOutDate" pattern="yyyy-MM-dd"
+							disabled="true">
+
+						</p:calendar>
+						<p:inputMask id="dayOutNpDate" disabled="true"
+							value="#{dayInOutMB.previousDayInOutModel.transDateNp}"
+							required="true" mask="9999-99-99"
+							requiredmsssa="Enter Exam Date Nepali">
+						</p:inputMask>
+
+					</p:panelGrid>
+					<p:commandButton
+						style="width:100px;margin-left:200px;margin-top:10px" update ="msg"
+						action="#{dayInOutMB.saveDayIn()}" value="Start" process="@this calDayInDate dayInNpDate"></p:commandButton>
+
+					<p:commandButton style="width:100px;margin-left:20px"
+						value="Cancel" onclick="dayInDialog.hide()"></p:commandButton>
+				</p:panel>
+				<p:growl id = "msg" showDetail="false"></p:growl>
+			</h:form>
+			
+		
+		</p:dialog>
+
+	</div>
+</h:body>
+</html>

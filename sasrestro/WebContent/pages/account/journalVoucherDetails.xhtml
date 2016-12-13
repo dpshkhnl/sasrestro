@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<title>Journal Voucher Details</title>
+	<link rel="stylesheet" type="text/css" href="css/decorator.css" />
+</h:head>
+<h:body>
+	<ui:composition template="/pages/protected/templates/master.xhtml">
+		<ui:define name="divMain">
+			<!-- <p:growl id="growl" showDetail="true"> -->
+			<h:form id="journalDetail">
+				<p:blockUI block="journalDetail" trigger="jvSearchBtn">
+					<p:graphicImage value="/resources/images/ajax-load.gif" />
+				</p:blockUI>
+				<p:panel>
+
+					<!-- <h:link target="" outcome="journalVoucherEntry.xhtml" value="a">New</h:link> -->
+					<p:panelGrid columns="15">
+						<p:commandButton value="#{bundle.news}" icon="ui-icon-plus"
+							disabled="#{userPrevilegeMB.journalVoucher lt 2}"
+							oncomplete="journalCreateWidget.show()"
+							action="#{journalMB.refreshModel}"
+							update=":journalEntryForm :journalEntryForm:jPanel">
+						</p:commandButton>
+						<p:commandButton value="#{bundle.refresh}" icon="ui-icon-plus"
+							process="@this"
+							update=":journalDetail :journalDetail:jorTreeTable">
+						</p:commandButton>
+						<h:outputLabel value="Unapproved" />
+						<p:selectBooleanCheckbox id="chkUnapproved"
+							value="#{journalMB.unApproved}" />
+
+						<h:outputLabel value="JV Type" />
+						<p:selectOneMenu id="jvType" value="#{journalMB.jvType}"
+							filter="true" filterMatchMode="startsWith">
+							<f:selectItem itemLabel="Select" />
+							<f:selectItems value="#{journalMB.jvTypeList}" var="jv"
+								itemLabel="#{jv.cvLbl}" itemValue="#{jv.cvId}" />
+						</p:selectOneMenu>
+
+						<h:outputLabel value="From: " />
+						<p:calendar id="fDt" value="#{journalMB.frmDt}" size="6"
+							pattern="yyyy-MM-dd" navigator="true" display="inline">
+							<p:ajax event="dateSelect"
+								listener="#{journalMB.updateDatesNP()}"
+								update=":journalDetail:fDtNep" process="@this fDtNep" />
+						</p:calendar>
+						<p:inputMask id="fDtNep" size="6" mask="9999-99-99"
+							value="#{journalMB.frmDtNp}">
+							<p:ajax event="blur" listener="#{journalMB.updateDatesAD()}"
+								update=":journalDetail:fDt" process="@this fDt" />
+						</p:inputMask>
+						<h:outputLabel value="To: " />
+						<p:calendar id="toDt" value="#{journalMB.toDt}" size="6"
+							pattern="yyyy-MM-dd" navigator="true" display="inline">
+							<p:ajax event="dateSelect"
+								listener="#{journalMB.updateDatesNP()}"
+								update=":journalDetail:toNep" process="@this toNep" />
+						</p:calendar>
+						<p:inputMask id="toNep" size="6" mask="9999-99-99"
+							value="#{journalMB.toDtNp}">
+							<p:ajax event="blur" listener="#{journalMB.updateDatesAD()}"
+								update=":journalDetail:toDt" process="@this toDt" />
+						</p:inputMask>
+						<h:outputLabel value="JvNo. " />
+
+						<p:inputText id="jvNo" value="#{journalMB.jvNo}" size="4"
+							validatorMessage="Only Number Allowed.">
+							<f:convertNumber integerOnly="true" pattern="###" type="number"
+								for="jvNo" />
+						</p:inputText>
+
+
+						<p:commandButton id="jvSearchBtn" value="Search"
+							action="#{journalMB.loadTree()}"
+							process="@this chkUnapproved jvType fDt toDt jvNo"
+							update=":journalDetail:jorTreeTable" />
+					</p:panelGrid>
+
+				</p:panel>
+
+				<p:treeTable value="#{journalMB.root}" var="document"
+					id="jorTreeTable" scrollable="true" scrollHeight="350"
+					resizableColumns="true" liveResize="true">
+					<f:facet name="header">
+						Pending UnApproved Voucher
+						</f:facet>
+					<p:column style="width:50px">
+						<f:facet name="header">
+							JV_No.
+							</f:facet>
+						<h:outputText value="#{document.jvm.jvNo}" style="height:50px" />
+
+
+					</p:column>
+					<p:column headerText="#{bundle.date}" width="50px">
+						<h:outputText value="#{document.jvm.jvDateBs}">
+							<f:convertDateTime pattern="MM-dd-yyyy" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="#{bundle.accalias}">
+						<h:outputText value="#{document.jvdm.accountHead.accCode}" />
+					</p:column>
+					<p:column headerText="#{bundle.accHead}">
+						<h:outputText value="#{document.jvdm.accountHead.accName}" />
+					</p:column>
+					<p:column headerText="#{bundle.drAmt}">
+						<h:outputText value="#{document.jvdm.drAmt}">
+							<f:convertNumber type="currency" currencySymbol="Rs." />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="#{bundle.crAmt}">
+						<h:outputText value="#{document.jvdm.crAmt}">
+							<f:convertNumber type="currency" currencySymbol="Rs." />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="#{bundle.narration}">
+						<h:outputText value="#{document.jvm.narration}" />
+					</p:column>
+
+					<p:column>
+						<p:panel visible="#{document.jvm.jvNo==null?false:true}"
+							style="border:0px">
+							<p:commandButton icon="ui-icon-pencil" title="Edit This Voucher"
+								actionListener="#{journalMB.editVoucher()}" process="@this"
+								disabled="#{userPrevilegeMB.journalVoucher lt 2}"
+								style="height:25px;width:25px"
+								oncomplete="journalCreateWidget.show()"
+								update=":journalEntryForm :journalEntryForm:newVouchDetails">
+								<f:param name="jv_no" value="#{document.jvm.journalPk.jvNo}" />
+								<f:param name="fy_id" value="#{document.jvm.journalPk.fyId}" />
+								<f:param name="jv_type" value="#{document.jvm.journalPk.jvType}" />
+							</p:commandButton>
+							<p:commandButton icon="ui-icon-check"
+								title="Approve This Voucher" process="@this"
+								disabled="#{userPrevilegeMB.journalVoucher lt 2}"
+								style="height:25px;width:25px"
+								actionListener="#{journalMB.approveVoucher}"
+								update=":messageGrowl :journalDetail">
+								<f:param name="jv_no" value="#{document.jvm.jvNo}" />
+								<f:param name="fy_id" value="#{document.jvm.fiscalYrModel.fyId}" />
+								<f:param name="jv_type" value="#{document.jvm.journalPk.jvType}" />
+							</p:commandButton>
+							<p:commandButton icon="ui-icon-delete"
+								title="Reject This Voucher" process="@this"
+								disabled="#{userPrevilegeMB.journalVoucher lt 3}"
+								style="height:25px;width:25px"
+								actionListener="#{journalMB.rejectVoucher()}"
+								update=":messageGrowl :journalDetail">
+								<f:param name="jv_no" value="#{document.jvm.jvNo}" />
+								<f:param name="fy_id" value="#{document.jvm.fiscalYrModel.fyId}" />
+								<f:param name="jv_type" value="#{document.jvm.journalPk.jvType}" />
+							</p:commandButton>
+							<p:commandButton icon="ui-icon-print" title="Print This Voucher"
+								style="height:25px;width:25px" action="#{journalMB.print()}"
+								ajax="false">
+								<f:setPropertyActionListener target="#{journalMB.jvPrint}"
+									value="#{document.jvm}" />
+							</p:commandButton>
+						</p:panel>
+						<p:confirmDialog global="true" showEffect="fade"
+							message="Do you want to approve the voucher?"
+							header="Confirmation" hideEffect="explode"
+							widgetVar="apprvDialog" modal="true">
+							<p:commandButton value="Yes" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+								actionListener="#{journalMB.approveVoucher}" process="@this"
+								oncomplete="apprvDialog.hide()">
+								<f:param name="jv_no" value="#{document.jvm.jvNo}" />
+								<f:param name="fy_id" value="#{document.jvm.jvNo}" />
+								<f:param name="jv_type" value="#{document.jvm.jvNo}" />
+							</p:commandButton>
+							<p:commandButton value="No" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close"
+								onclick="apprvDialog.hide()" />
+						</p:confirmDialog>
+						<p:confirmDialog global="true" showEffect="fade"
+							message="Do you want to reject the voucher?"
+							header="Confirmation" hideEffect="explode"
+							widgetVar="rejectDialog" modal="true">
+							<p:commandButton value="Yes" type="button"
+								styleClass="ui-confirmdialog-yes" icon="ui-icon-check"
+								actionListener="#{journalMB.approveVoucher}"
+								oncomplete="rejectDialog.hide()">
+								<f:param name="jv_no" value="#{document.jvm.jvNo}" />
+								<f:param name="fy_id" value="#{document.jvm.jvNo}" />
+								<f:param name="jv_type" value="#{document.jvm.jvNo}" />
+							</p:commandButton>
+							<p:commandButton value="No" type="button"
+								styleClass="ui-confirmdialog-no" icon="ui-icon-close"
+								onclick="rejectDialog.hide()" />
+						</p:confirmDialog>
+					</p:column>
+				</p:treeTable>
+				<br />
+				<br />
+			</h:form>
+
+			<ui:include src="journalVoucherEntry.xhtml" />
+
+		</ui:define>
+	</ui:composition>
+
+
+
+</h:body>
+</html>

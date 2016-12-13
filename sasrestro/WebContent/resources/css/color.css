@@ -1,0 +1,15 @@
+.unpaid{
+background-color : white !important;
+}
+
+.expire{
+background-color: red !important; 
+}
+
+.paid{
+background-color: yellow !important;
+}
+
+.DEFAULT{
+background-color: white !important; 
+}

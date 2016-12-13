@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>departments</title>
+</h:head>
+<h:body>
+	<ui:composition template="/pages/protected/templates/master.xhtml">
+		<ui:define name="divMain">
+			<!-- <p:growl id="messages" showDetail="true" />  -->
+			<h:form id="deptForm">
+				<p:panel header="#{bundle.currDepts}">
+					<p:panelGrid columns="2" border="1" id="panelMain">
+						<p:tree value="#{departmentMB.rootNode}" var="node" id="tree"
+							dynamic="true" cache="false" selectionMode="single"
+							selection="#{departmentMB.selectedNode}"
+							style="height: 500px!important">
+
+							<p:ajax event="expand" update=":messageGrowl"
+								listener="#{departmentMB.onNodeExpand}" />
+							<p:ajax event="collapse" update=":messageGrowl"
+								listener="#{departmentMB.onNodeCollapse}" />
+							<p:ajax event="select"
+								update=":messageGrowl :deptForm:deptDetailsPanel"
+								listener="#{departmentMB.onNodeSelect}" />
+							<p:ajax event="unselect" update=":messageGrowl "
+								listener="#{departmentMB.onNodeUnselect}" />
+
+							<p:treeNode id="treeNode" expandedIcon="ui-icon-folder-open"
+								collapsedIcon="ui-icon-folder-collapsed">
+								<h:outputText value="#{node.departmentName}" id="lblNode" />
+							</p:treeNode>
+						</p:tree>
+
+						<p:panel header="#{bundle.deptDetails}" id="deptDetailsPanel"
+							style="height: 500px!important">
+							<p:panelGrid columns="2" border="1" id="deptDetailsPG">
+								<p:outputLabel value="#{bundle.deptName}" />
+								<p:inputText id="departmentname" required="true"
+									value="#{departmentMB.department.departmentName}">
+									<f:validateLength minimum="2" />
+								</p:inputText>
+								<p:outputLabel value="#{bundle.level}" />
+								<p:inputText id="level" readonly="true"
+									value="#{departmentMB.department.level}" disabled="true" />
+								<p:outputLabel value="#{bundle.parent}" />
+								<p:inputText id="parent" readonly="true"
+									value="#{departmentMB.department.parentName}" disabled="true" />
+							</p:panelGrid>
+							<br />
+							<p:commandButton value="New" icon="ui-icon-carat-1-n"
+								actionListener="#{departmentMB.addNewHead()}"
+								update=":messageGrowl :deptForm:tree :deptForm:deptDetailsPanel">
+							</p:commandButton>
+							<p:commandButton value="#{bundle.save}" icon="ui-icon-plus"
+								actionListener="#{departmentMB.saveDepartment()}"
+								update=":messageGrowl :deptForm:tree :deptForm:deptDetailsPanel" />
+							<p:commandButton value="#{bundle.edit}" icon="ui-icon-pencil"
+								actionListener="#{departmentMB.updateDepartment()}"
+								update=":messageGrowl :deptForm:tree :deptForm:deptDetailsPanel" />
+							<p:commandButton value="#{bundle.delete}" icon="ui-icon-bullet"
+								actionListener="#{departmentMB.deleteDepartment()}"
+								update=":messageGrowl :deptForm:tree :deptForm:deptDetailsPanel" />
+						</p:panel>
+					</p:panelGrid>
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

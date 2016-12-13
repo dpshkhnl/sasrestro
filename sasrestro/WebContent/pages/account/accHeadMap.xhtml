@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<title>Account Head Map</title>
+	<link rel="stylesheet" type="text/css" href="css/decorator.css" />
+</h:head>
+<h:body>
+	<ui:composition template="/pages/protected/templates/master.xhtml">
+		<ui:define name="divMain">
+			<p:growl id="msgs" showDetail="false" />
+			<h:form id="AccountHeadMap">
+				<br />
+				<p:panel header="Account Head Map" id="acc_head_map"
+					style="margin-bottom:10px; align:center;">
+					<p:panelGrid style="top-margin:15px; " styleClass="borderlesspanel">
+						<p:row>
+							<p:column style="text-align:right;">
+								<p:outputLabel for="MapPurpose" value="Map purpose" />
+							</p:column>
+							<p:column>
+								<p:selectOneMenu id="MapPurpose" style="width:200px;"
+									required="true"
+									value="#{accHeadMappingMB.mapPurpose.formCodeId}">
+									<f:selectItem itemLabel="Select" itemValue="" />
+									<f:selectItems value="#{accHeadMappingMB.formCodeByFee}"
+										var="formcode" itemValue="#{formcode.formCodeId}"
+										itemLabel="#{formcode.label}" />
+									<p:ajax listener="#{accHeadMappingMB.selectedData()}"
+										update=":AccountHeadMap:pickLeaf" />
+								</p:selectOneMenu>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column style="text-align:right;">
+								<h:outputText value="" />
+							</p:column>
+							<p:column>
+								<p:tree value="#{accHeadMappingMB.root}" var="node"
+									dynamic="true" cache="false" selectionMode="single"
+									emptyMessage="#{bundle.noRecords}"
+									selection="#{accHeadMappingMB.selectedNode}" id="tree"
+									style="width:300px; height:300px!important">
+									<p:treeNode id="treeNode" expandedIcon="ui-icon-folder-open"
+										collapsedIcon="ui-icon-folder-collapsed">
+										<h:outputText value="#{node.accName} (#{node.accCode})"
+											id="lblNode" />
+									</p:treeNode>
+									<p:ajax event="select"
+										listener="#{accHeadMappingMB.onNodeSelect}"
+										update=":AccountHeadMap:pickLeaf" />
+								</p:tree>
+							</p:column>
+							<p:column />
+							<p:column>
+								<p:pickList id="pickLeaf" converter="#{accHeadConverter}"
+									value="#{accHeadMappingMB.dlstAccounts}" var="leaf"
+									itemLabel="#{leaf.accName} (#{leaf.accCode})"
+									itemValue="#{leaf}">
+									<f:facet name="sourceCaption">Available</f:facet>
+									<f:facet name="targetCaption">Ready To Map/Mapped</f:facet>
+									<p:ajax event="transfer"
+										listener="#{accHeadMappingMB.updateList}"
+										process="@this pickLeaf" update=":msgs :AccountHeadMap"/>
+								</p:pickList>
+							</p:column>
+						</p:row>
+						<p:row>
+							<p:column />
+							<p:column>
+								<p:commandButton value="Save" action="#{accHeadMappingMB.save}"
+									disabled="#{userPrevilegeMB.accHeadMap lt 2}"
+									update=":msgs :AccountHeadMap" />
+							</p:column>
+							<p:column />
+							<p:column>
+								<p:commandButton value="Reset" process="@this"
+									action="#{accHeadMappingMB.resetMap}"
+									update=":AccountHeadMap:MapPurpose :AccountHeadMap:tree :AccountHeadMap:pickLeaf" />
+							</p:column>
+							<p:column />
+							<p:column />
+						</p:row>
+					</p:panelGrid>
+				</p:panel>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

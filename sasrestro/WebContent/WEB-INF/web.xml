@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	id="WebApp_ID" version="3.0">
+	<display-name>SAS Restro</display-name>
+	<welcome-file-list>
+		<welcome-file>pages/public/login.xhtml</welcome-file>
+	</welcome-file-list>
+	<servlet>
+		<servlet-name>Faces Servlet</servlet-name>
+		<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<session-config>
+		<!-- Session idle timeout in min. -->
+		<session-timeout>20</session-timeout>
+	</session-config>
+	<servlet-mapping>
+		<servlet-name>Faces Servlet</servlet-name>
+		<url-pattern>*.xhtml</url-pattern>
+	</servlet-mapping>
+	<context-param>
+		<param-name>javax.faces.PROJECT_STAGE</param-name>
+		<param-value>Development</param-value>
+	</context-param>
+	<filter>
+		<filter-name>LoginCheckFilter</filter-name>
+		<filter-class>sasrestro.filter.LoginCheckFilter</filter-class>
+		<init-param>
+			<param-name>loginActionURI</param-name>
+			<param-value>/sasrestro/pages/public/login.xhtml</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>LoginCheckFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter>
+		<filter-name>AdminPagesFilter</filter-name>
+		<filter-class>sasrestro.filter.AdminPagesFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>AdminPagesFilter</filter-name>
+		<url-pattern>/pages/protected/admin/*</url-pattern>
+	</filter-mapping>
+	<filter>
+		<filter-name>DefaultUserPagesFilter</filter-name>
+		<filter-class>sasrestro.filter.DefaultUserPagesFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>DefaultUserPagesFilter</filter-name>
+		<url-pattern>/pages/protected/defaultUser/*</url-pattern>
+	</filter-mapping>
+	<mime-mapping>
+		<extension>ico</extension>
+		<mime-type>image/x-icon</mime-type>
+	</mime-mapping>
+	<context-param>
+	   <param-name>facelets.SKIP_COMMENTS</param-name>
+	   <param-value>true</param-value>
+	</context-param>	
+	<context-param>
+		<param-name>javax.faces.DATETIMECONVERTER_DEFAULT_TIMEZONE_IS_SYSTEM_TIMEZONE</param-name>
+		<param-value>true</param-value>
+	</context-param>
+	<filter>
+		<filter-name>PrimeFaces FileUpload Filter</filter-name>
+		<filter-class>org.primefaces.webapp.filter.FileUploadFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>PrimeFaces FileUpload Filter</filter-name>
+		<servlet-name>Faces Servlet</servlet-name>
+	</filter-mapping>
+	<mime-mapping>
+		<extension>xlsx</extension>
+		<mime-type>text/xlsx</mime-type>
+	</mime-mapping>
+	<mime-mapping>
+		<extension>ttf</extension>
+		<mime-type>application/x-font-ttf</mime-type>
+	</mime-mapping>
+<context-param>
+	<param-name>primefaces.THEME</param-name>
+	<param-value>afterwork</param-value>
+</context-param>
+<context-param>
+   <param-name>javax.faces.PROJECT_STAGE</param-name>
+   <param-value>Production</param-value>
+</context-param>
+		
+</web-app>

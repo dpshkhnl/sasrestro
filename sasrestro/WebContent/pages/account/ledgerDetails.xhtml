@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<title>Ledger Details</title>
+	<link rel="stylesheet" type="text/css" href="css/main.css" />
+	<link rel="javascript" />
+	<style type="text/css">
+.ui-chkbox .ui-chkbox-label {
+	float: right;
+}
+</style>
+</h:head>
+<h:body>
+	<p:dialog id="ledgerView" widgetVar="ledgerViewWidget" closable="true"
+		draggable="true" resizable="true" header="Ledger Details" modal="true"
+		width="600" height="600" appendToBody="true" dynamic="true"
+		maximizable="true">
+		<h:form id="ledgerDetails">
+			<p:row>
+				<p:panelGrid columns="5">
+					<h:outputLabel value="Date: #{accReportMB.jvDt}" />
+					<h:outputLabel />
+					<h:outputLabel value="JV No.: #{accReportMB.jvNo}" />
+					<h:outputLabel />
+					<h:outputLabel value="JV Type: #{accReportMB.jvTpe}" />
+				</p:panelGrid>
+			</p:row>
+			<!-- <p:panel id="ledgerPanel" header="Ledger Details">
+				<p:panelGrid columns="1"> -->
+			<p:row>
+				<p:dataTable id="ledTable" value="#{accReportMB.jvDetList}"
+					var="jvDt" rowIndexVar="rowsn" scrollable="true" scrollHeight="550">
+					<p:column headerText="SN">
+						<h:outputLabel value="#{rowsn+1}" />
+					</p:column>
+					<!-- <p:column headerText="Date">
+					<h:outputLabel value="#{jvDt.jvm.jvDateBs}" />
+				</p:column> -->
+					<p:column headerText="Account Alias">
+						<h:outputLabel value="#{jvDt.accountHead.accCode}" />
+					</p:column>
+					<p:column headerText="Account Head">
+						<h:outputLabel value="#{jvDt.accountHead.accName}" />
+					</p:column>
+					<p:column headerText="Dr.">
+						<h:outputLabel value="#{jvDt.drAmt}">
+							<f:convertNumber type="currency" currencySymbol="Rs." />
+						</h:outputLabel>
+					</p:column>
+					<p:column headerText="Cr.">
+						<h:outputLabel value="#{jvDt.crAmt}">
+							<f:convertNumber type="currency" currencySymbol="Rs." />
+						</h:outputLabel>
+					</p:column>
+				</p:dataTable>
+			</p:row>
+			<!-- </p:panelGrid>
+			</p:panel> -->
+		</h:form>
+	</p:dialog>
+</h:body>
+</html>

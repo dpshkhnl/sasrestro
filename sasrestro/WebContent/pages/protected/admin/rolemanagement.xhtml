@@ -1,0 +1,65 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+	<title>roles</title>
+</h:head>
+<h:body>
+<ui:composition template="/pages/protected/templates/master.xhtml">
+		<ui:define name="divMain">
+	<h:form id="formMain">
+		<p:growl id = "message" showDetail="false"></p:growl>
+Welcome to Role Management
+<p:panel id="panelMain" header="Manage Roles" >
+			<p:panelGrid columns="2" border="1" id="panelGridMain" >
+				<p:outputLabel id="lblRoleName" value="#{hq.newCheck==true?'New ':''}Role Name : "  />
+				<p:inputText id="roleName" value="#{hq.role.roleName}"
+					 required="true"/>
+						
+				<p:outputLabel id="lblSelectRole" value="Select To Update : "  rendered="#{not hq.newCheck}" />
+				<p:selectOneMenu id="roles" label="Available Roles" effect="fold"
+					value="#{hq.role.roleId}" required="true"  rendered="#{not hq.newCheck}"
+					 style="width: 100% !important;">
+					<f:selectItem itemLabel="Select One" itemValue="" />
+					<f:selectItems value="#{hq.roleList}" var="role"
+						itemLabel="#{role.roleName}" itemValue="#{role.roleId}" />
+					<p:ajax listener="#{hq.onRoleSelect()}"
+						update=":formMain:aclCombo aclOp roleName" />
+				</p:selectOneMenu>
+				
+				<p:outputLabel value="Access Rules : " />			
+				<p:selectCheckboxMenu id="aclCombo" value="#{hq.aclIds}"
+					label="Granted ACL" filter="true" filterText="Filter"
+					filterMatchMode="startsWith" panelStyle="width:300px"
+					required="true"  style="width: 100% !important;" >
+					<f:selectItems value="#{hq.aclCol}" var="acl"
+						itemLabel="#{acl.displayName}" itemValue="#{acl.aclId}" />
+				</p:selectCheckboxMenu>				
+				
+				
+<p:selectOneListbox id="aclOp" rendered="not empty #{hq.aclIds}">
+			<f:selectItems value="#{hq.aclIds}" var="cols" itemLabel="#{cols}" />
+		</p:selectOneListbox>
+			</p:panelGrid>
+			<br/>
+		<p:commandButton value="New" action="#{hq.newRole()}" process="@this"
+			update=":formMain" />
+		<p:commandButton value="Save" actionListener="#{hq.saveRole()}"
+			 update="message panelGridMain" />
+		
+		<p:commandButton value="Cancel" process="@this"  action="#{hq.resetAll()}"	update="panelGridMain">
+		<p:resetInput target="panelGridMain"/>
+		</p:commandButton>
+		</p:panel>
+
+		
+
+	</h:form>
+	</ui:define>
+	</ui:composition>
+</h:body>
+
+</html>

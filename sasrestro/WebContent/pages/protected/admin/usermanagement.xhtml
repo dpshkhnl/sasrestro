@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<h:head>
+	<link rel="stylesheet" type="text/css" href="css/decorator.css" />
+</h:head>
+<h:body>
+	<ui:composition template="/pages/protected/templates/master.xhtml">
+		<ui:define name="divMain">
+			<h:form id="usersForm">
+				<p:dataTable id="usersTable" value="#{userMB.allUsers}"
+					rowIndexVar="rowsn" var="user" emptyMessage="No Records"
+					paginator="true" rows="10"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="10,20,30" selectionMode="single"
+					selection="#{userMB.selectedUser}" rowKey="#{user.name}"
+					filteredValue="#{userMB.filteredUsers}">
+					<p:ajax event="rowSelect" listener = "#{userMB.onRowSelect}"
+						update=":userDetailDialogForm :userUpdateDialogForm :userResetPasswordForm :usersForm:cmdDetail :usersForm:cmdDelete 
+							:usersForm:cmdUpdate :usersForm:cmdReset" />
+					<!--  oncomplete="userDetailDialogWidget.show()" -->
+					<f:facet name="header">
+						<h:outputText value="User Management" />
+					</f:facet>
+
+					<p:column style="width:7px">
+						<f:facet name="header">
+							<h:outputText value="Sno" />
+						</f:facet>
+						<h:outputText value="#{rowsn+1}" />
+					</p:column>
+					<!-- <p:column filterBy="#{user.name}" filterMatchMode="contains"> -->
+					<!-- <p:column filterBy="#{user.name}" filterMatchMode="exact"> -->
+					<!-- <p:column filterBy="#{user.name}" filterMatchMode="endsWith"> -->
+					<p:column filterBy="#{user.name}" filterMatchMode="startsWith"
+						sortBy="#{user.name}">
+
+						<f:facet name="header">
+							<h:outputText value="Full Name" />
+						</f:facet>
+
+						<h:outputText value="#{user.name}" />
+					</p:column>
+
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="User Name" />
+						</f:facet>
+						<h:outputText value="#{user.email}" />
+					</p:column>
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="Role" />
+						</f:facet>
+						<h:outputText value="#{user.role.roleName}" />
+					</p:column>
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="Status" />
+						</f:facet>
+						<h:outputText value="#{user.status}" />
+					</p:column>
+
+				</p:dataTable>
+				<p:commandButton id ="cmdDetail" value="Details" icon="ui-icon-bullet"
+					onclick="userDetailDialogWidget.show();" disabled = "#{userMB.userSelection?flase:true}"
+					update=":userDetailDialogForm">
+					<f:setPropertyActionListener target="#{userMB.selectedUser}"
+						value="#{userMB.selectedUser}" />
+				</p:commandButton>
+				<p:spacer width="10px" />
+				<p:commandButton value="Create User"
+					icon="ui-icon-plus" update=":userCreateDialogForm"
+					actionListener="#{userMB.resetUser()}"
+					onclick="userCreateDialogWidget.show();" />
+				<p:spacer width="10px" />
+				<p:commandButton  id = "cmdUpdate" value="Update" icon="ui-icon-pencil" disabled = "#{userMB.userSelection?flase:true}"
+					update=":userUpdateDialogForm"
+					onclick="userUpdateDialogWidget.show();">
+					<f:setPropertyActionListener target="#{userMB.selectedUser}"
+						value="#{userMB.selectedUser}" />
+				</p:commandButton>
+				<p:spacer width="10px" />
+				<p:commandButton  id = "cmdDelete" value="Delete" update=":userDeleteDialogForm" disabled = "#{userMB.userSelection?flase:true}"
+					onclick="userDeleteDialogWidget.show();">
+					<f:setPropertyActionListener target="#{userMB.selectedUser}"
+						value="#{userMB.selectedUser}" />
+				</p:commandButton>
+				<p:spacer width="10px" />
+				<p:commandButton id = "cmdReset" value="Reset password " disabled = "#{userMB.userSelection?flase:true}"
+					update=":userResetPasswordForm"
+					onclick="userResetPasswordFormWidget.show();">
+					<f:setPropertyActionListener target="#{userMB.selectedUser}"
+						value="#{userMB.selectedUser}" />
+				</p:commandButton>
+				<h:panelGrid columns="2">
+					<p:panel header="Export All Data">
+						<h:commandLink>
+							<p:graphicImage value="/resources/images/excel.png" />
+							<p:dataExporter type="xls" target="usersTable"
+								fileName="Current Users--All" tableTitle="User List" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<p:graphicImage value="/resources/images/pdf.png" />
+							<pe:exporter type="pdf" target="usersTable"
+								fileName="Current Users--All" tableTitle="Current Users--All" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<p:graphicImage value="/resources/images/csv.png" />
+							<p:dataExporter type="csv" target="usersTable"
+								fileName="Current Users--All" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<p:graphicImage value="/resources/images/xml.png" />
+							<p:dataExporter type="xml" target="usersTable"
+								fileName="Current Users--All" />
+						</h:commandLink>
+
+					</p:panel>
+
+					<p:panel header="Export Page Data">
+						<h:commandLink>
+							<p:graphicImage value="/resources/images/excel.png" />
+							<p:dataExporter type="xls" target="usersTable"
+								fileName="Current Users--OnePage" pageOnly="true" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<p:graphicImage value="/resources/images/pdf.png" />
+							<pe:exporter type="pdf" target="usersTable"
+								fileName="Current Users--OnePage"
+								tableTitle="Current Users--OnePage" pageOnly="true" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<p:graphicImage value="/resources/images/csv.png" />
+							<p:dataExporter type="csv" target="usersTable"
+								fileName="Current Users--OnePage" pageOnly="true" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<p:graphicImage value="/resources/images/xml.png" />
+							<p:dataExporter type="xml" target="usersTable" fileName="cars"
+								pageOnly="true" />
+						</h:commandLink>
+					</p:panel>
+				</h:panelGrid>
+
+
+
+			</h:form>
+
+			<ui:include
+				src="/pages/protected/admin/dialogs/userCreateDialog.xhtml" />
+			<ui:include
+				src="/pages/protected/admin/dialogs/userDetailDialog.xhtml" />
+			<ui:include
+				src="/pages/protected/admin/dialogs/userUpdateDialog.xhtml" />
+			<ui:include
+				src="/pages/protected/admin/dialogs/userDeleteDialog.xhtml" />
+			<ui:include
+				src="/pages/protected/admin/dialogs/userResetPassword.xhtml" />
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

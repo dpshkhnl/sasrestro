@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<title>Form Code</title>
+	<link rel="stylesheet" type="text/css" href="css/decorator.css" />
+</h:head>
+<h:body>
+	<ui:composition template="/pages/protected/templates/master.xhtml">
+		<ui:define name="divMain">
+
+			<p:growl id="msgs" showDetail="false" />
+			<h:form id="FormCode">
+				<p:panel header="Form Code" id="form_code">
+					<h:panelGrid columns="2" cellspacing="10" >
+						<p:panel style="height:213px; width:200px;" >
+							
+								<h:outputText value="Label:" id="lblLabel" />
+								<p:inputText id="txtLabel" value="#{formCodeMB.formModel.label}" required="true"/>
+
+								<h:outputText value="Remarks:" id="lblRemarks" />
+								<p:inputText id="txtRemarks"  value="#{formCodeMB.formModel.remarks}" required="true"/>
+
+								<br/><br/>
+								<p:commandButton value="New" id="cmdNew" disabled="#{userPrevilegeMB.formCode lt 2}"  process="@this" update=":msgs :FormCode:lblLabel :FormCode:lblRemarks :FormCode"/>&nbsp;&nbsp;&nbsp;&nbsp;
+								<p:commandButton value="Save" id="cmdSave" disabled="#{userPrevilegeMB.formCode lt 2}" actionListener="#{formCodeMB.saveformCode()}" update=":FormCode:lblLabel :FormCode:lblRemarks :FormCode:tblFormCode :msgs"/>
+
+							</p:panel>
+						<p:panel style="width:630px; height:213px;">
+							<p:dataTable id="tblFormCode" rowIndexVar="rowIndex" scrollable="true" scrollHeight="180"  value="#{formCodeMB.allData}"
+								style="width:600px;" var="code">
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="#{bundle.sn}" />
+									</f:facet>
+									<h:outputText value="#{rowIndex+1}" />
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Label" />
+									</f:facet>
+									<h:outputText value="#{code.label}"/>
+								</p:column>
+
+								<p:column headerText="#">
+									<f:facet name="header">
+										<h:outputText value="Remarks" />
+									</f:facet>
+									<h:outputText value="#{code.remarks}"/>
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="Action" />
+									</f:facet>
+									<p:commandButton icon="ui-icon-pencil" disabled="true" title="Edit" update=":FormCode:lblLabel :FormCode:lblRemarks :FormCode">
+											 <f:setPropertyActionListener target="#{formCodeMB.formModel}" value="#{code}" ></f:setPropertyActionListener>
+									</p:commandButton>
+
+									<p:commandButton  icon="ui-icon-close"  disabled="true"   process="@this" title="Delete"  onclick="confirmation.show()"  > 
+ 										<f:setPropertyActionListener target="#{formCodeMB.formModel.formCodeId}"	value="#{code.formCodeId}"  ></f:setPropertyActionListener>
+							</p:commandButton>
+								</p:column>
+
+
+							</p:dataTable>
+									<p:confirmDialog message=" Are you Sure to perform the action ?"
+	        						header="Edit/Delete"  severity="alert" widgetVar="confirmation">
+	        						<p:commandButton value="OK" process="@this"  update=":FormCode" oncomplete="confirmation.hide()"
+	           							  actionListener="#{formCodeMB.deleteformCode()}" >
+	           						</p:commandButton>
+	        						<p:commandButton value="Cancel" process="@this" onclick="confirmation.hide()" type="button" update=":FeeSchemeForm"/>
+    							</p:confirmDialog>
+							
+							
+							
+						</p:panel>
+
+					</h:panelGrid>
+				</p:panel>
+			</h:form>
+
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

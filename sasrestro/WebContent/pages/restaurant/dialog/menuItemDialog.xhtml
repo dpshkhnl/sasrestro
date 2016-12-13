@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<title>Show Loan Details</title>
+	<link rel="stylesheet" type="text/css" href="css/decorator.css" />
+	<style>
+</style>
+</h:head>
+<h:body>
+
+	<p:dialog  modal="true" closable="true" draggable="false"
+		widgetVar="menuItemDia" resizable="false" header="Add/Edit Menu Item"
+		appendToBody="true" showEffect="clip">
+
+		<h:form id="addMenu" target="_blank">
+			<p:growl id="msgIssueGrowl"></p:growl>
+			<br></br>
+				<p:panel style="text-align:right">
+				<p:panelGrid columns="2">
+					<p:panelGrid style="margin-bottom:10px" columns="2" cellpadding="5"
+						styleClass="issuePanel">
+
+						<p:column>
+							<h:outputText value="Item Name:" id="lblName" />
+						</p:column>
+						<p:column>
+							<p:inputText style="width:250px" id="txtName"
+								value="#{menuItemMB.menuItemModel.name}" required="true"
+								requiredMessage="Please enter Item name." />
+						</p:column>
+
+
+						<p:column>
+							<h:outputText value="Category:" id="lblCategory" />
+						</p:column>
+						<p:column>
+							<p:inputText style="width:250px" id="txtCategory"
+								value="#{menuItemMB.menuItemModel.category}" />
+						</p:column>
+						<p:column>
+							<h:outputText value="Rate:" id="lblrate" />
+						</p:column>
+						<p:column>
+							<p:inputText style="width:250px" id="txtRate"
+								value="#{menuItemMB.menuItemModel.price}">
+								<f:convertNumber pattern="##,##0.00" />
+							</p:inputText>
+
+						</p:column>
+						
+						<p:column>
+							<h:outputText value="Unit" id="lblunit" />
+						</p:column>
+						<p:column>
+						
+						<p:selectOneMenu id="unit"
+										style="width:260px;text-align:left" required="true"
+										requiredMessage="Please select unit Type."
+										value="#{menuItemMB.menuItemModel.unit}">
+										<f:selectItem itemLabel="Select" itemValue="0" />
+										<f:selectItem itemLabel="Plate/Plates" itemValue="1" />
+										<f:selectItem itemLabel="Pcs" itemValue="2" />
+										<f:selectItem itemLabel="ml." itemValue="3" />
+										
+									</p:selectOneMenu>
+
+				</p:column>
+				<p:column>
+							<h:outputText value="Description:" id="lblDesc" />
+						</p:column>
+						<p:column>
+							<p:inputText style="width:250px;" id="txtDesc">
+								
+							</p:inputText>
+
+						</p:column>
+
+
+						<p:column>
+							<p:outputLabel></p:outputLabel>
+						</p:column>
+						
+						
+						<p:column>
+							<p:commandButton value="Save" id="cmdSave" process="@this txtRate txtCategory txtName unit foodImage"
+								update=":frmMenu msgIssueGrowl" action="#{menuItemMB.save}"
+								oncomplete="menuItemDia.hide();"
+								style="width:100px;margin-left:10px" />
+							<p:commandButton value="Close" id="cmdClear" process="@this"
+								onclick="menuItemDia.hide();"
+								style="width:100px;margin-left:10px" />
+						</p:column>
+						
+
+					</p:panelGrid>
+						<h:panelGrid columns="1">
+								<h:form enctype="multipart/form-data" id="foodImage">
+									<h:panelGrid columns="1">
+										<p:graphicImage height="140" width="140"
+											value="#{menuItemMB.foodImage}" id="image" />
+										<p:fileUpload fileUploadListener="#{menuItemMB.upload}"
+											mode="advanced" auto="true" label="* Choose a Photo"
+											
+											update=":addMenu:foodImage:image"
+											process="@this" />
+										<p:commandButton icon="ui-icon-cancel" value="Remove Image  "
+											action="#{menuItemMB.setNullMemberImage()}" process="@this"
+											update="foodImage :addMenu:msgIssueGrowl" />
+									</h:panelGrid>
+								</h:form>
+							</h:panelGrid>
+							</p:panelGrid>
+					
+				</p:panel>
+		</h:form>
+	</p:dialog>
+
+
+
+</h:body>
+</html>

@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<title>Journal Voucher Entry</title>
+	<link rel="stylesheet" type="text/css" href="css/decorator.css" />
+	<link rel="javascript" />
+
+</h:head>
+<h:body>
+	<p:dialog id="journalCreate" widgetVar="journalCreateWidget"
+		height="600" width="1200" closable="true" draggable="false"
+		resizable="false" header="Journal Voucher" modal="true">
+		<h:form id="journalEntryForm">
+			<br />
+			<p:panel id="jPanel" header="Journal Voucher">
+				<p:panelGrid columns="2" id="panelMain" style="border:none">
+					<p:tree value="#{treeBean.root}" var="node" dynamic="true"
+						cache="false" selectionMode="single"
+						emptyMessage="#{bundle.noRecords}"
+						selection="#{treeBean.selectedNode}" id="tree"
+						style="height: 500px!important; width:200px">
+						<p:ajax event="expand" update=":messageGrowl"
+							listener="#{treeBean.onNodeExpand}" />
+						<p:ajax event="collapse" update=":messageGrowl"
+							listener="#{treeBean.onNodeCollapse}" />
+						<p:ajax event="select"
+							update=":messageGrowl :journalEntryForm:accAlias :journalEntryForm:autoAccountHead :journalEntryForm:displayAmt"
+							listener="#{journalMB.onNodeSelectForJournal}" />
+						<p:ajax event="unselect" update=":messageGrowl "
+							listener="#{treeBean.onNodeUnselect}" />
+						<p:treeNode id="treeNode" expandedIcon="ui-icon-folder-open"
+							collapsedIcon="ui-icon-folder-collapsed">
+							<h:outputText value="#{node.accCode} #{node.accName}"
+								id="lblNode" />
+						</p:treeNode>
+					</p:tree>
+					<p:panel header="Journal Details" style="height: 500px!important">
+						<p:panelGrid columns="5" id="accDetailsPG" style="border:none">
+							<p:outputLabel value="#{bundle.jvno}" />
+							<p:inputText value="#{journalMB.jvmSummary.jvNo}"
+								label="#{bundle.accCode}" id="accCode" readonly="true">
+							</p:inputText>
+							<p:column>
+								<p:selectOneRadio id="jvType" value="#{journalMB.jvType}"
+									required="true" requiredMessage="Select Journal Voucher Type.">
+									<f:selectItems value="#{journalMB.jvTypeMap}" />
+									<p:ajax event="click" process="@this" />
+								</p:selectOneRadio>
+							</p:column>
+							<!-- <p:selectManyCheckbox value="#{journalMB.jvmSummary.rvFlag}" id="revVoucher">
+								<f:selectItem itemValue="1"
+									itemLabel="#{bundle.revereseVoucher}"></f:selectItem>
+							</p:selectManyCheckbox> -->
+						</p:panelGrid>
+						<p:panelGrid columns="4" style="border:0px" id="jvPanel">
+							<p:outputLabel value="Account Code" />
+							<p:outputLabel value="#{bundle.accHead}" />
+							<p:column>
+								<p:outputLabel value="#{bundle.debit}" />
+								<p:outputLabel value="#{bundle.credit}"
+									style="float:right; margin-right:95px;" />
+							</p:column>
+							<p:outputLabel value="Narration" />
+							<p:autoComplete id="accAlias" minQueryLength="1" maxResults="100"
+								value="#{journalMB.accMcg}"
+								completeMethod="#{journalMB.getAccHeadByAccCode}" var="head1"
+								itemLabel="#{head1.accCode}" itemValue="#{head1}"
+								converter="#{accHeadConverter}">
+								<p:ajax event="itemSelect" process="@this accAlias"
+									listener="#{journalMB.onAccHeadAutoComplete()}"
+									update=":messageGrowl jPanel" />
+							</p:autoComplete>
+							<p:autoComplete id="autoAccountHead" minQueryLength="1"
+								maxResults="100" value="#{journalMB.accMcg}"
+								completeMethod="#{journalMB.getAccountHeadList}" var="head"
+								itemLabel="#{head.accName}" itemValue="#{head}"
+								converter="#{accHeadConverter}">
+								<p:ajax event="itemSelect" process="@this autoAccountHead"
+									listener="#{journalMB.onAccHeadAutoComplete()}"
+									update=":messageGrowl jPanel" />
+							</p:autoComplete>
+							<p:column>
+								<pe:inputNumber value="#{journalMB.drAmt}" id="drAmt"
+									required="true" style="width:120px" decimalPlaces="2"
+									label="#{bundle.parent}" thousandSeparator=""
+									maxValue="9999999999999.99" />
+								<pe:inputNumber value="#{journalMB.crAmt}" id="crAmt"
+									required="true" style="width:120px" decimalPlaces="2"
+									label="#{bundle.alias}" thousandSeparator=""
+									maxValue="9999999999999.99" />
+							</p:column>
+							<p:inputText value="#{journalMB.narration}" id="txtNarration" />
+							<p:commandButton value="#{bundle.add}" icon="ui-icon-plus"
+								partialSubmit="true" process="jvPanel" id="addVoucher"
+								actionListener="#{journalMB.loadTableData}"
+								update=":journalEntryForm:cmdSave  :messageGrowl 
+								:journalEntryForm:newVouchDetails :journalEntryForm:totalDr 
+								:journalEntryForm:totalCr :journalEntryForm:displayAmt 
+								:journalEntryForm:accAlias :journalEntryForm:autoAccountHead 
+								:journalEntryForm:drAmt :journalEntryForm:crAmt 
+								:journalEntryForm:drMinusCr :journalEntryForm:txtNarration" />
+							<p:outputLabel value="#{bundle.curBalance}" style="align:right" />
+							<pe:inputNumber id="displayAmt" value="#{journalMB.displyAMount}"
+								maxValue="9999999999999.99" style="width:180px"
+								thousandSeparator="" disabled="true"></pe:inputNumber>
+							<!-- <p:inputText id="displayAmt" value="#{journalMB.displyAMount}"
+								style="width:180px" readonly="true"></p:inputText> -->
+						</p:panelGrid>
+						<p:panelGrid columns="1" style="width:700px">
+							<p:dataTable id="newVouchDetails"
+								value="#{journalMB.journalDataList}" var="jData"
+								scrollable="true" scrollHeight="90" style="width:780px"
+								selectionMode="single" selection="#{journalMB.jvmDetails}"
+								rowKey="#{jData.accountHead.accHeadId}">
+								<p:ajax event="rowDblselect"
+									listener="#{journalMB.journalEntryRowSelect}"
+									update=":journalEntryForm:cmdSave  :journalEntryForm:accAlias  
+									:journalEntryForm:autoAccountHead :journalEntryForm:narration 
+									:journalEntryForm:drAmt :journalEntryForm:crAmt :journalEntryForm:displayAmt 
+									:journalEntryForm:totalDr :journalEntryForm:totalCr 
+									 :journalEntryForm:newVouchDetails :journalEntryForm:drMinusCr :journalEntryForm:txtNarration" />
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="#{bundle.accCode}" />
+									</f:facet>
+									<h:outputText value="#{jData.accountHead.accCode}" />
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="#{bundle.accHead}" />
+									</f:facet>
+									<h:outputText value="#{jData.accountHead.accName}" />
+								</p:column>
+
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="#{bundle.debit}" />
+									</f:facet>
+									<h:outputText value="#{jData.drAmt}">
+										<f:convertNumber type="currency" currencySymbol="" />
+									</h:outputText>
+								</p:column>
+								<p:column>
+									<f:facet name="header">
+										<h:outputText value="#{bundle.credit}" />
+									</f:facet>
+									<h:outputText value="#{jData.crAmt}">
+										<f:convertNumber type="currency" currencySymbol="" />
+									</h:outputText>
+								</p:column>
+								<p:column style="width:250px">
+									<f:facet name="header">
+										<h:outputText value="#{bundle.narration}" />
+									</f:facet>
+									<h:outputText value="#{jData.narration}" />
+								</p:column>
+							</p:dataTable>
+						</p:panelGrid>
+						<p:panelGrid columns="4">
+							<h:outputText value="#{bundle.total}"
+								style="align:right;width:300px" />
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								&nbsp;&nbsp;&nbsp;&nbsp;
+								<p:column>
+								<p:inputText readonly="true" value="#{journalMB.totalDr}"
+									id="totalDr" style="width:120px;">
+									<f:convertNumber currencySymbol="Rs." type="currency" />
+								</p:inputText>
+								<p:inputText readonly="true" value="#{journalMB.totalCr}"
+									id="totalCr" style="width:120px;">
+									<f:convertNumber currencySymbol="Rs." type="currency" />
+								</p:inputText>
+								<h:outputLabel value="Difference" />
+								&nbsp;
+								<p:inputText readonly="true" value="#{journalMB.drMinusCr}"
+									id="drMinusCr">
+									<f:convertNumber currencySymbol="Rs." type="currency" />
+								</p:inputText>
+							</p:column>
+							<h:outputText />
+						</p:panelGrid>
+						<p:panelGrid columns="2">
+							<h:outputText value="#{bundle.narration}" />
+							<p:inputTextarea id="narration" rows="2" style="width:700px"
+								value="#{journalMB.narration}" required="false" />
+						</p:panelGrid>
+						<p:panelGrid columns="4" id="panelTrxnDetail">
+							<h:outputText value="Invoice No." />
+							<p:inputText id="invoice"
+								value="#{journalMB.jvmSummary.receiptNo}" />
+							<h:outputText value="#{bundle.received}" rendered="false" />
+							<p:inputText value="#{journalMB.jvmSummary.receiptAmt}"
+								onkeypress="validateNumericInput(event, this.text)"
+								rendered="false" />
+							<h:outputText value="Prepared By" />
+							<p:selectOneMenu id="receivedBy" style="width:160px"
+								required="true" value="#{journalMB.jvmSummary.receivedBy}"
+								converter="userConverter" disabled="true">
+								<f:selectItem itemLabel="Select" itemValue="" />
+								<f:selectItems value="#{userMB.allUsers}" var="user"
+									itemLabel="#{user.name}" itemValue="#{user}" />
+							</p:selectOneMenu>
+							<h:outputText value="#{bundle.chequeNo}" />
+							<p:inputText id="chequeNo"
+								value="#{journalMB.jvmSummary.chequeNo}" />
+							<h:outputText value="#{bundle.chequeAmt}" />
+							<p:inputText value="#{journalMB.jvmSummary.receiptAmt}"
+								onkeypress="validateNumericInput(event, this.text)" />
+							<p:column>
+								<h:outputText value="#{bundle.submittedBy}" rendered="false" />
+								<p:selectOneMenu id="submittedBy" style="width:160px"
+									value="#{journalMB.jvmSummary.submittedBy}"
+									converter="userConverter" rendered="false">
+									<f:selectItem itemLabel="Select" itemValue="" />
+									<f:selectItems value="#{userMB.allUsers}" var="user"
+										itemLabel="#{user.name}" itemValue="#{user}">
+									</f:selectItems>
+								</p:selectOneMenu>
+							</p:column>
+							<!-- <h:outputText />
+							<h:outputText /> -->
+							<h:outputText value="#{bundle.approvedBy}" rendered="false" />
+							<p:selectOneMenu id="approvedBy" style="width:160px"
+								value="#{journalMB.jvmSummary.approvedBy}"
+								converter="userConverter" rendered="false">
+								<f:selectItem itemLabel="Select" itemValue="" />
+								<f:selectItems value="#{userMB.allUsers}" var="user"
+									itemLabel="#{user.name}" itemValue="#{user}">
+								</f:selectItems>
+							</p:selectOneMenu>
+							<h:outputText value="#{bundle.auditedBy}" rendered="false" />
+							<p:selectOneMenu id="auditedBy" style="width:160px"
+								value="#{journalMB.jvmSummary.auditedBy}"
+								converter="userConverter" rendered="false">
+								<f:selectItem itemLabel="Select" itemValue="" />
+								<f:selectItems value="#{userMB.allUsers}" var="user"
+									itemLabel="#{user.name}" itemValue="#{user}">
+								</f:selectItems>
+							</p:selectOneMenu>
+						</p:panelGrid>
+						<br />
+						<p:panelGrid columns="1"
+							style="width:900px;align:center;border:0px">
+							<p:column>
+								<p:commandButton id="cmdSave" value="Save" icon="ui-icon-plus"
+									disabled="#{empty journalMB.journalDataList or journalMB.totalDr != journalMB.totalCr}"
+									action="#{journalMB.saveJournalVoucher()}"
+									update=":messageGrowl :journalEntryForm :journalDetail"
+									process="@this chequeNo invoice narration">
+									<p:resetInput
+										target=":journalCreate :journalEntryForm :journalDetail" />
+								</p:commandButton>
+								<p:commandButton value="#{bundle.cancel}" icon="ui-icon-bullet"
+									disabled="#{empty journalMB.journalDataList or journalMB.totalDr != journalMB.totalCr}">
+									<p:resetInput target="journalCreate"></p:resetInput>
+								</p:commandButton>
+							</p:column>
+						</p:panelGrid>
+					</p:panel>
+				</p:panelGrid>
+			</p:panel>
+			<br />
+		</h:form>
+	</p:dialog>
+</h:body>
+</html>

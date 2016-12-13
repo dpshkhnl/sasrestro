@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>Ledger</title>
+<link rel="stylesheet" type="text/css" href="css/decorator.css" />
+</head>
+<body>
+	<ui:composition template="/pages/protected/templates/master.xhtml">
+		<ui:define name="divMain">
+			<h:form id="ledgerForm">
+				<p:blockUI block="ledgerForm" trigger="cmdView">
+					<p:graphicImage value="/resources/images/ajax-load.gif" />
+				</p:blockUI>
+				<p:panelGrid columns="8">
+					<p:column>
+						<p:outputLabel value="From: " for="fromDate" />
+						<p:calendar id="fromDate" value="#{accReportMB.fromDate}"
+							pattern="yyyy-MM-dd" navigator="true" />
+					</p:column>
+					<p:column>
+						<p:outputLabel value="To: " for="toDate" />
+						<p:calendar id="toDate" value="#{accReportMB.toDate}"
+							pattern="yyyy-MM-dd" navigator="true" />
+					</p:column>
+					<p:outputLabel value="Root Account Heads: " for="cmbRootHead" />
+					<p:selectOneMenu id="cmbRootHead" filter="true"
+						filterMatchMode="startsWith"
+						value="#{accReportMB.rootNode.accHeadId}">
+						<f:selectItem itemValue="0" itemLabel="Select" />
+						<f:selectItems value="#{accReportMB.rootNodes}" var="head"
+							itemValue="#{head.accHeadId}" itemLabel="#{head.accName}" />
+						<p:ajax update="cmbChildHead" process="@this cmbRootHead" />
+					</p:selectOneMenu>
+					<p:outputLabel value="Child Account Head: " for="cmbChildHead" />
+					<p:selectOneMenu id="cmbChildHead" filter="true"
+						filterMatchMode="startsWith"
+						value="#{accReportMB.childNode.accHeadId}">
+						<f:selectItem itemValue="0" itemLabel="Select" />
+						<f:selectItems value="#{accReportMB.childNodes}" var="child"
+							itemValue="#{child.accHeadId}" itemLabel="#{child.accName}" />
+					</p:selectOneMenu>
+					<p:commandButton id="cmdView" value="View" icon="ui-icon-search"
+						actionListener="#{accReportMB.loadLedger()}" title="View Ledger"
+						update=":ledgerForm:ledgerTable"
+						process="@this cmbRootHead cmbChildHead fromDate toDate">
+					</p:commandButton>
+					<p:commandButton value="PDF" icon="ui-icon-print" />
+					<p:commandButton value="Excel" icon="ui-icon-report" />
+				</p:panelGrid>
+				<p:dataTable id="ledgerTable" value="#{accReportMB.ledgerRepo}"
+					var="l" rowIndexVar="rowsn">
+					<f:facet name="header">
+						<h:outputText value="LEDGER AS AT " />
+					</f:facet>
+					<p:column headerText="S.N.">
+						<h:outputText value="#{rowsn+1}" />
+					</p:column>
+					<p:column headerText="Date">
+						<h:outputText value="#{l.ledgerObj.postedDate}">
+							<f:convertDateTime type="date" pattern="yyyy-MM-dd" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Voucher Type">
+						<h:outputText value="#{l.ledgerObj.journalVourcher.jvType.cvLbl}" />
+					</p:column>
+					<p:column headerText="Voucher No.">
+						<h:outputText
+							value="#{l.ledgerObj.journalVourcher.journalPk.jvNo}" />
+					</p:column>
+					<p:column headerText="Account Head">
+						<h:outputText
+							value="#{l.ledgerObj.isOpening eq 0 ? l.ledgerObj.toAccountHead.accName : l.ledgerObj.accountHead.accName}" />
+					</p:column>
+					<p:column headerText="Dr.">
+						<h:outputText value="#{l.ledgerObj.drAmt}">
+							<f:convertNumber currencySymbol="Rs." type="currency" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Cr.">
+						<h:outputText value="#{l.ledgerObj.crAmt}">
+							<f:convertNumber currencySymbol="Rs." type="currency" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Amount">
+						<h:outputText value="#{l.sum}">
+							<f:convertNumber currencySymbol="Rs." type="currency" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="Remarks">
+						<h:outputText value="#{l.ledgerObj.remarks}" />
+					</p:column>
+					<p:column headerText="View Details">
+						<p:commandButton id="btnAction" icon="ui-icon-search"
+							title="View Details" process="@this ledgerTable"
+							action="#{accReportMB.forLedgerDetail()}" update=":ledgerDetails"
+							oncomplete="ledgerViewWidget.show()">
+							<f:setPropertyActionListener
+								target="#{accReportMB.ledgerRepoObj}" value="#{l}"
+								for="btnAction" />
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+			</h:form>
+			<ui:include src="ledgerDetails.xhtml" />
+		</ui:define>
+	</ui:composition>
+
+</body>
+</html>

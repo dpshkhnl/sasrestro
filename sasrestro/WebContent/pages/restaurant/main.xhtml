@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<title>Restro Management:Main</title>
+	<link rel="stylesheet" type="text/css" href="css/decorator.css" />
+</h:head>
+<h:body>
+
+
+	<!-- ll generally  xhtml folders are maitainded with minimum sub folders for jsf navigation simplicity - -->
+	<ui:composition template="/pages/protected/templates/master.xhtml">
+		<ui:define name="divMain">
+			<h:form id="maina">
+
+				<h:form>
+
+					<p:poll interval="10" update=":maina:dash" />
+				</h:form>
+
+				<p:growl id="msgs" showDetail="true" />
+				<h:panelGrid columns="2" id="dash">
+					<p:dashboard id="dynamic_dashboard"
+						binding="#{dashboardBacker.dashboard}" />
+				</h:panelGrid>
+
+
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

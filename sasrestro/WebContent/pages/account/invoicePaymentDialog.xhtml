@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<style>
+.issuePanel tr, .companyHeaderGrid td {
+	border: none;
+	border-color: white;
+}
+</style>
+</h:head>
+<h:body>
+	<p:dialog widgetVar="invoiceDialogWidget" modal="true" closable="true"
+		id="invoiceDialog" draggable="false" resizable="false"
+		header="Invoice Payment" width="1000" appendToBody="true"
+		dynamic="true">
+		<h:form id="invoicePayment">
+			<!-- tblAccount start -->
+
+			<table id="tblAccountPaymentInfo">
+				<tr>
+					<td style="vertical-align: top;"><p:panel id="panAccountInfo"
+							header="Account Infofmation"
+							style="margin-top:10px; margin-bottom:10px; width:850px;">
+							<table id="tblAccountInfo">
+								<tr>
+									<td style="width: 100px;"><h:outputText
+											style="margin-left:5px; float:right;" value="Total Amount: " /></td>
+									<td><p:inputText id="txtTotPurAmt" disabled="true"
+											value="#{invoiceDetailsMB.inventoryInvoiceModel.invAmt}"
+											style="width:142px;" /></td>
+									<td colspan="3" rowspan="5" style="vertical-align: top;">
+										<p:dataTable id="tblPayment"
+											value="#{invoiceDetailsMB.lstPurPayment}"
+											selectionMode="single" var="payList" rowIndexVar="rowSn"
+											rows="3" rowKey="#{payList.payId}">
+											<p:ajax event="rowSelect"
+												listener="#{invoiceDetailsMB.onRowSelect}" />
+											<p:column headerText="#" escape="false"
+												style="white-space:pre-line; word-break:break-all; width:30px; text-align:center;">
+												<h:outputText value="#{rowSn+1}" />
+											</p:column>
+											<p:column headerText="Account" escape="false"
+												style="white-space:pre-line; word-break:break-all; width:150px; text-align:center;">
+												<h:outputText value="#{payList.payAcc.accName}" />
+											</p:column>
+											<p:column headerText="Amount" escape="false"
+												style="white-space:pre-line; word-break:break-all; width:150px; text-align:center;">
+												<h:outputText value="#{payList.payAmt}" />
+											</p:column>
+										</p:dataTable>
+									</td>
+								</tr>
+								<tr>
+									<td><h:outputText style="margin-left:5px; float:right;"
+											value="Account: " /></td>
+									<td><p:selectOneMenu id="cmbAccount" style="width:150px;" required="true"
+										requiredMessage="Please select the Account"
+											value="#{invoiceDetailsMB.purchasePaymentModel.payAcc.accHeadId}">
+											<f:selectItem itemLabel="Select One" itemValue="" />
+											<f:selectItems value="#{invoiceDetailsMB.lstAccHead}"
+												var="accHead" itemValue="#{accHead.accHeadId}"
+												itemLabel="#{accHead.accName}, #{accHead.accCode}" />
+										</p:selectOneMenu></td>
+								</tr>
+								<tr>
+									<td><h:outputText style="margin-left:5px; float:right;"
+											value="Amount: " /></td>
+									<td><p:inputText id="txtAccAmt" required="true"
+									requiredMessage="Please enter the Amount"
+											value="#{invoiceDetailsMB.purchasePaymentModel.payAmt}"
+											style="width:142px;">
+										</p:inputText></td>
+								</tr>
+								<tr>
+									<td colspan="5">&nbsp;</td>
+								</tr>
+								<tr>
+									<td colspan="2" align="center"><p:commandButton
+											value="#{bundle.add}" icon="ui-icon-plus"
+											process="@this cmbAccount txtAccAmt"
+											actionListener="#{invoiceDetailsMB.loadPaymentTable}"
+											style="width:100px;"
+											update=":messageGrowl tblPayment cmbAccount txtAccAmt txtTotAccAmt btnPay">
+										</p:commandButton></td>
+								</tr>
+								<tr>
+									<td colspan="2" align="center"><p:commandButton
+											value="#{bundle.remove}" icon="ui-icon-minus" process="@this"
+											style="width:100px;"
+											update=":messageGrowl tblPayment cmbAccount txtAccAmt txtTotAccAmt btnPay"
+											actionListener="#{invoiceDetailsMB.remove}" /></td>
+									<td>&nbsp;</td>
+									<td align="right"><h:outputText
+											style="margin-left:5px; float:right; width:100px;"
+											value="Total: " /></td>
+									<td><p:inputText id="txtTotAccAmt" style="width:150px;"
+											value="#{invoiceDetailsMB.dblTotalPayAmt}" readonly="true">
+											<p:ajax event="blur" update=":invoicePayment:btnPay"
+												process="@this btnPay txtTotAccAmt" />
+										</p:inputText></td>
+								</tr>
+							</table>
+						</p:panel></td>
+					<td
+						style="width: 100%; vertical-align: middle; text-align: center;">
+						<p:commandButton value="Pay" id="btnPay" icon="ui-icon-plus"
+							disabled="#{invoiceDetailsMB.dblTotalPayAmt == invoiceDetailsMB.inventoryInvoiceModel.invAmt?false:true}"
+							style="margin-left:5px;width:100px;margin-top:10px; margin-bottom:10px;"
+							process="@this"
+							actionListener="#{invoiceDetailsMB.approveInvoice()}"
+							update=":messageGrowl :frmInvoiceDetails:tblInvoiceDetails" /> <br />
+						<p:commandButton value="Reset" icon="ui-icon-minus" update = ":frmInvoiceDetails:tblInvoiceDetails"
+							action = "#{invoiceDetailsMB.resetDialog()}"
+							style="margin-left:5px;width:100px;" />
+					</td>
+				</tr>
+			</table>
+			<!-- tblAccount end -->
+
+		</h:form>
+	</p:dialog>
+</h:body>
+</html>

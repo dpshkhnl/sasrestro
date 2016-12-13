@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:p="http://primefaces.org/ui">
+<h:body>
+	<ui:composition template="/pages/protected/templates/master.xhtml">
+		<ui:define name="divMain">
+			<h:form id="dogsForm">
+				<p:dataTable id="dogsTable" value="#{dogMB.allDogs}" var="dog" emptyMessage="#{bundle.noRecords}" paginator="true" rows="10"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="5,10,15" selectionMode="single"  selection="#{dogMB.selectedDog}" rowKey="#{dog.name}">
+					 <p:ajax event="rowSelect" listener="#{dogMB.onRowSelect}" 
+                    update=":dogDetailDialogForm :dogUpdateDialogForm"/><!--  oncomplete="dogDetailDialogWidget.show()" -->
+                     <f:facet name="header">
+							<h:outputText value="Dog Management" />
+						</f:facet>
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="#{bundle.dogName}" />
+						</f:facet>
+
+						<h:outputText value="#{dog.name}" />
+					</p:column>
+
+					<p:column>
+						<f:facet name="header">
+							<h:outputText value="#{bundle.dogAge}" />
+						</f:facet>
+
+						<h:outputText value="#{dog.age}" />
+					</p:column>
+					
+
+				</p:dataTable>
+						<p:commandButton value="#{bundle.detail}" icon="ui-icon-bullet" onclick="dogDetailDialogWidget.show();" update=":dogDetailDialogForm" >
+							<f:setPropertyActionListener target="#{dogMB.dog}" value="#{dogMB.selectedDog}" />
+						</p:commandButton> 
+						<p:spacer width="10px" />
+						<p:commandButton value="#{bundle.update}" icon="ui-icon-pencil" update=":dogUpdateDialogForm" onclick="dogUpdateDialogWidget.show();" >
+							<f:setPropertyActionListener target="#{dogMB.dog}" value="#{dogMB.selectedDog}" />
+						</p:commandButton>
+						<p:spacer width="10px" />
+						<p:commandButton value="#{bundle.delete}" icon="ui-icon-trash" update=":dogDeleteDialogForm" onclick="dogDeleteDialogWidget.show();" >
+							<!-- if we add CRUD operations in each row, we use <f:setPropertyActionListener target="#{dogMB.dog}" value="#{dog}" /> -->
+							<f:setPropertyActionListener target="#{dogMB.dog}" value="#{dogMB.selectedDog}" />
+						</p:commandButton>
+				<p:commandButton value="#{bundle.create} #{bundle.dog}" icon="ui-icon-plus" update=":dogCreateDialogForm"
+					actionListener="#{dogMB.resetDog()}" onclick="dogCreateDialogWidget.show();" />
+					<h:panelGrid columns="2">
+	<p:panel header="Export All Data">
+		<h:commandLink>
+			<p:graphicImage value="/resources/images/excel.png" />
+			<p:dataExporter type="xls" target="dogsTable" fileName="cars" />
+		</h:commandLink>
+
+		<h:commandLink>
+			<p:graphicImage value="/resources/images/pdf.png" />
+			<p:dataExporter type="pdf" target="dogsTable" fileName="cars"/>
+		</h:commandLink>
+		
+		<h:commandLink>
+			<p:graphicImage value="/resources/images/csv.png" />
+			<p:dataExporter type="csv" target="dogsTable" fileName="cars" />
+		</h:commandLink>
+		
+		<h:commandLink>
+			<p:graphicImage value="/resources/images/xml.png" />
+			<p:dataExporter type="xml" target="dogsTable" fileName="cars" />
+		</h:commandLink>
+	</p:panel>
+	
+	<p:panel header="Export Page Data">
+		<h:commandLink>
+			<p:graphicImage value="/resources/images/excel.png" />
+			<p:dataExporter type="xls" target="dogsTable" fileName="cars" pageOnly="true"/>
+		</h:commandLink>
+
+		<h:commandLink>
+			<p:graphicImage value="/resources/images/pdf.png" />
+			<p:dataExporter type="pdf" target="dogsTable" fileName="cars" pageOnly="true"/>
+		</h:commandLink>
+		
+		<h:commandLink>
+			<p:graphicImage value="/resources/images/csv.png" />
+			<p:dataExporter type="csv" target="dogsTable" fileName="cars" pageOnly="true"/>
+		</h:commandLink>
+		
+		<h:commandLink>
+			<p:graphicImage value="/resources/images/xml.png" />
+			<p:dataExporter type="xml" target="dogsTable" fileName="cars" pageOnly="true"/>
+		</h:commandLink>
+	</p:panel>
+</h:panelGrid>
+
+<p:dialog id="dialog" header="Dog Detail" widgetVar="dogDialog" resizable="false"
+                showEffect="fade" hideEffect="explode">
+
+        <h:panelGrid id="display" columns="2" cellpadding="3">
+
+            <f:facet name="header">
+                <!-- <p:graphicImage value="/images/cars/#{tableBean.selectedCar.manufacturer}.jpg"/> -->
+            </f:facet>
+
+            <h:outputText value="Dog:" />
+            <h:outputText value="#{dogMB.selectedDog.name}" />
+
+            <h:outputText value="Age:" />
+            <h:outputText value="#{dogMB.selectedDog.age}" />
+
+            
+        </h:panelGrid>
+    </p:dialog>
+    
+    
+			</h:form>
+
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>

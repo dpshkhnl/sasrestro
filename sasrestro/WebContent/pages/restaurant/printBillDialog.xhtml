@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:pe="http://primefaces.org/ui/extensions"
+	xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+
+	<link rel="stylesheet" type="text/css" href="css/decorator.css" />
+	<style>
+</style>
+</h:head>
+<h:body>
+
+	<p:dialog width="500px" modal="true" closable="true" draggable="false"
+		widgetVar="printDia" resizable="false" header="Print Bill"
+		appendToBody="true" showEffect="clip">
+
+		<h:form id="frmPrint" target="_blank">
+			<p:growl id="msgIssueGrowl"></p:growl>
+			<br></br>
+			<p:panel style="text-align:right">
+				<p:panelGrid style="margin-bottom:10px" columns="2" cellpadding="5"
+					styleClass="issuePanel">
+					<p:column>
+						<h:outputText value="Customer Name:" id="lblName" />
+					</p:column>
+					<p:column>
+						<p:inputText style="width:250px" id="txtName"
+							value="#{printBillMB.customerName}" required="true"
+							requiredMessage="Please enter Customer Name." />
+					</p:column>
+					<p:column>
+						<h:outputText value="Table No." id="lblCapacity" />
+					</p:column>
+					<p:column>
+						<p:selectOneMenu id="txtCapacity"
+							style="width:260px;text-align:left" required="true"
+							requiredMessage="Please select Table "
+							value="#{printBillMB.tableId}">
+							<f:selectItem itemLabel="Select Table" itemValue=""
+								noSelectionOption="true" />
+							<f:selectItems value="#{printBillMB.lstTable}" var="item"
+								itemLabel="#{item.table_id.tableName}"
+								itemValue="#{item.table_id.tableId}" />
+							<p:ajax listener="#{printBillMB.loadData()}"
+								process="@this  txtCapacity txtName " update=":frmPrint:cmdSave"></p:ajax>
+						</p:selectOneMenu>
+					</p:column>
+					<p:outputLabel></p:outputLabel>
+					<p:column>
+						<p:commandButton value="Print" id="cmdSave"
+							process="@this  txtCapacity txtName "
+							disabled="#{printBillMB.lstBillItem[0] == null}"
+							update="msgIssueGrowl" action="#{printBillMB.printReceipt()}"
+							immediate="true" ajax="false" oncomplete="printDia.hide();"
+							style="width:100px;margin-left:10px" />
+						<p:commandButton value="Close" id="cmdClear" process="@this"
+							onclick="printDia.hide();" style="width:100px;margin-left:10px" />
+					</p:column>
+				</p:panelGrid>
+
+			</p:panel>
+		</h:form>
+	</p:dialog>
+
+
+
+</h:body>
+</html>

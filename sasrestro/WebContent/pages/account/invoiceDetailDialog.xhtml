@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<style>
+.issuePanel tr, .companyHeaderGrid td {
+	border: none;
+	border-color: white;
+}
+</style>
+</h:head>
+<h:body>
+	<p:dialog widgetVar="invoiceDetailDialogWidget" modal="true"
+		closable="true" id="invoiceDetailDialog" draggable="false"
+		resizable="false" header="Invoice Details" width="1000"
+		appendToBody="true" dynamic="true">
+		<h:form id="invoiceDetails">
+
+
+			<p:panel id="panSupplierInfo" header="Supplier Infofmation"
+				style="margin:0 auto;  width:850px;" >
+				<p:panelGrid columns = "4">
+				
+					
+						<h:outputText value="Supplier Name:&nbsp;&nbsp;&nbsp;&nbsp;"></h:outputText>
+					
+					
+						<h:outputText value="#{invoiceDetailsMB.invInvoiceModel.supId.suppName}"></h:outputText>
+					
+						<h:outputText  style = "margin-left:50px" value="Address:&nbsp;&nbsp;&nbsp;&nbsp;"></h:outputText>
+					
+						<h:outputText value="#{invoiceDetailsMB.invInvoiceModel.supId.address}"></h:outputText>
+					
+						<h:outputText value="Contact Person:&nbsp;&nbsp;&nbsp;&nbsp;"></h:outputText>
+					
+					
+						<h:outputText value="#{invoiceDetailsMB.invInvoiceModel.supId.conPerson}"></h:outputText>
+						
+					
+						<h:outputText style = "margin-left:50px" value="Phone:&nbsp;&nbsp;&nbsp;&nbsp;"></h:outputText>
+					
+					
+						<h:outputText value="#{invoiceDetailsMB.invInvoiceModel.supId.phNo}"></h:outputText>
+					
+					
+					<h:outputText value="Invoice No:&nbsp;&nbsp;&nbsp;&nbsp;"></h:outputText>
+					
+						<h:outputText value="#{invoiceDetailsMB.invInvoiceModel.invNo}"></h:outputText>
+					
+					<h:outputText style = "margin-left:50px"  value="Invoice Date:&nbsp;&nbsp;&nbsp;&nbsp;"></h:outputText>
+					
+					
+						<h:outputText value="#{invoiceDetailsMB.invInvoiceModel.invDtEn}">
+							<f:convertDateTime pattern="yyyy-MM-dd" />
+							</h:outputText>
+					
+				
+
+	</p:panelGrid>
+			</p:panel>
+			<p:panel id="panInvoiceDetails" header="Invoice Details"
+				style="margin:0 auto;  width:850px;" columns="2">
+				<p:dataTable id="tblInvoiceDetails"
+					value="#{invoiceDetailsMB.invDisplay}" var="invDisplay" rowIndexVar="rowsn">
+					<p:column style="width:20px;">
+						<f:facet name="header">
+							<h:outputText value="#{bundle.sn}" />
+						</f:facet>
+						<h:outputText value="#{rowsn+1}" />
+					</p:column>
+
+					
+					<p:column style="width:60px;">
+						<f:facet name="header">
+							<h:outputText value="Brand Name" />
+						</f:facet>
+						<h:outputText value="#{invDisplay.brandName}">
+						</h:outputText>
+					</p:column>
+						
+					
+					<p:column style="width:70px;">
+						<f:facet name="header">
+							<h:outputText value="Item" />
+						</f:facet>
+						<h:outputText value="#{invDisplay.item}">
+						</h:outputText>
+					</p:column>
+					
+					<p:column style="width:30px;">
+						<f:facet name="header">
+							<h:outputText value="Quantity" />
+						</f:facet>
+						<h:outputText value="#{invDisplay.quantity}">
+						</h:outputText>
+					</p:column>
+					<p:column style="width:60px;">
+						<f:facet name="header">
+							<h:outputText value="Unit Price" />
+						</f:facet>
+						<h:outputText value="#{invDisplay.unitCost}">
+						</h:outputText>
+					</p:column>
+					
+					<p:column style="width:60px;">
+						<f:facet name="header">
+							<h:outputText value="Total Price" />
+						</f:facet>
+						<h:outputText value="#{invDisplay.totCost}">
+						</h:outputText>
+					</p:column>
+					
+				</p:dataTable>
+
+			</p:panel>
+		</h:form>
+	</p:dialog>
+</h:body>
+</html>
