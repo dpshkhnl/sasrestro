@@ -106,7 +106,7 @@ public class AccHeadEJB extends GenericDAO<AccHeadMcg> {
 	@SuppressWarnings("unchecked")
 	public List<AccHeadMcg> getForAccHeadAutoComplete(String accHead) {
 		Query query = getEntityManager()
-				.createQuery(
+				.createNativeQuery(
 						"SELECT a FROM AccHeadMcg a WHERE a.accName LIKE '"
 								+ accHead
 								+ "%' AND a.parent != 0 AND a.accHeadId NOT IN (SELECT aa.parent FROM AccHeadMcg aa WHERE aa.parent != 0)",
@@ -117,7 +117,7 @@ public class AccHeadEJB extends GenericDAO<AccHeadMcg> {
 	@SuppressWarnings("unchecked")
 	public List<AccHeadMcg> getForAccHeadAutoCompleteByAccCode(String accCode) {
 		Query query = getEntityManager()
-				.createQuery(
+				.createNativeQuery(
 						"SELECT a FROM AccHeadMcg a WHERE a.accCode LIKE '"
 								+ accCode
 								+ "%' AND a.parent != 0 AND a.accHeadId NOT IN (SELECT aa.parent FROM AccHeadMcg aa WHERE aa.parent != 0)",

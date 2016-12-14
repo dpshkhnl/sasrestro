@@ -16,7 +16,7 @@ import javax.persistence.UniqueConstraint;
 
 
 @Entity
-@Table(name = "journal_voucher_details_mcg",uniqueConstraints={@UniqueConstraint(name="unqJvDetConstraint",columnNames={"jv_det_id","fy_id","jv_no","jv_type"})})
+@Table(name = "journal_voucher_details_mcg",uniqueConstraints={@UniqueConstraint(columnNames={"jv_det_id","fy_id","jv_no","jv_type"})})
 public class JournalVoucherDetailModel implements Serializable {
 
 	private static final long serialVersionUID = 1L;

@@ -169,7 +169,7 @@ public class AccountReportEJB extends GenericDAO<AccountReportModel> {
 				+ "JOIN l.accountHead a "
 				+ "WHERE a.accHeadId='"+accHeadId+"' "
 				+ "AND (l.postedDate BETWEEN '"+sdf.format(fromDate)+"' AND '"+sdf.format(toDate)+"') ";
-		Query query = getEntityManager().createQuery(qry,LedgerMcg.class);
+		Query query = getEntityManager().createNativeQuery(qry,LedgerMcg.class);
 
 		return (List<LedgerMcg>)query.getResultList();
 	}

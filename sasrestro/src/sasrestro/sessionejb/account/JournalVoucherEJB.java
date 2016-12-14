@@ -110,7 +110,7 @@ public class JournalVoucherEJB extends GenericDAO<JournalVoucherModel> {
 
 	public JournalVoucherModel getJournalVoucherWithJvNoAndFyId(int jvNo,
 			int fyId) {
-		Query query = getEntityManager().createQuery(
+		Query query = getEntityManager().createNativeQuery(
 				"SELECT j from JournalVoucherModel j  "
 						+ " WHERE  j.journalPk.jvNo=" + jvNo
 						+ " and j.journalPk.fyId=" + fyId + "",
@@ -121,7 +121,7 @@ public class JournalVoucherEJB extends GenericDAO<JournalVoucherModel> {
 
 	//Added by Sudeep
 	public JournalVoucherModel getJournalVoucherWithJvNoFyIdAndJvType(int jvNo, int fyId, int jvType){
-		Query query = getEntityManager().createQuery("SELECT j from JournalVoucherModel j  "
+		Query query = getEntityManager().createNativeQuery("SELECT j from JournalVoucherModel j  "
 				+ " WHERE  j.journalPk.jvNo=" + jvNo
 				+ " and j.journalPk.fyId=" + fyId + " AND j.journalPk.jvType="+jvType+" ",
 				JournalVoucherModel.class);

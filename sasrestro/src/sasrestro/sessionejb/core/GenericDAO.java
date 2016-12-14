@@ -113,7 +113,7 @@ public abstract class GenericDAO<T> {
 				cq = em.getCriteriaBuilder().createQuery();
 				cq.select(cq.from(entityClass));
 				return em.createQuery(cq).getResultList();
-			} catch (org.eclipse.persistence.exceptions.DatabaseException ex) {
+			} catch (Exception ex) {
 				System.out.println("The zzz error is :" + ex.toString());
 				JSFMessageUtil jsfMessageUtil = new JSFMessageUtil();
 				jsfMessageUtil
@@ -216,7 +216,7 @@ public abstract class GenericDAO<T> {
 
 			// e.printStackTrace();
 			return null;
-		} catch (org.eclipse.persistence.exceptions.DatabaseException e) {
+		} catch (Exception e) {
 			JSFMessageUtil jsfMessageUtil = new JSFMessageUtil();
 			jsfMessageUtil
 					.sendErrorMessageToUser("Database Server is unavailable or not accessible!");

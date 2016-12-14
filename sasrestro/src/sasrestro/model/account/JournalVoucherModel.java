@@ -28,7 +28,7 @@ import sasrestro.model.user.User;
 import sasrestro.model.util.FiscalYrModel;
 
 @Entity
-@Table(name = "journal_voucher_mcg", uniqueConstraints={@UniqueConstraint(name="unqJvConstraint",columnNames={"fy_id","jv_no","jv_type"})})
+@Table(name = "journal_voucher_mcg", uniqueConstraints={@UniqueConstraint(columnNames={"fy_id","jv_no","jv_type"})})
 //@SequenceGenerator(name="seqJvNo", initialValue=1,allocationSize=2)
 @NamedQueries({
 		@NamedQuery(name = "JournalVoucherModel.findPendingJV", 

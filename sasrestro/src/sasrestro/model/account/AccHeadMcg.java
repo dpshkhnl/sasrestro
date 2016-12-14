@@ -28,7 +28,7 @@ import javax.persistence.UniqueConstraint;
  */
 
 @Entity
-@Table(name = "acc_head_mcg", uniqueConstraints = { @UniqueConstraint(columnNames = { "acc_code" }, name = "unq_acc_code_acc_head_mcg") })
+@Table(name = "acc_head_mcg", uniqueConstraints = { @UniqueConstraint(columnNames = { "acc_code" }) })
 @NamedQueries({
 		@NamedQuery(name = "AccHeadMcg.findByAccHeadId", query = "SELECT a FROM AccHeadMcg a "
 				+ "where a.accHeadId = :accHeadIdPassed"),
